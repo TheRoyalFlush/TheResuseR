@@ -61,6 +61,8 @@ public class FindStuff extends Fragment implements OnMapReadyCallback {
     boolean permission;
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 101;
     JSONArray markerArray;
+    boolean queryFlag = false;
+    String queryString = "";
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     @Override
@@ -87,6 +89,22 @@ public class FindStuff extends Fragment implements OnMapReadyCallback {
         inflater.inflate(R.menu.search_menu,menu);
         MenuItem menuItem = menu.findItem(R.id.searchMenu);
         SearchView searchView = (SearchView)menuItem.getActionView();
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                queryFlag = true;
+                queryString = query;
+                PopulateMap populateMap = new PopulateMap();
+                populateMap.execute();
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+
+                return false;
+            }
+        });
         super.onCreateOptionsMenu(menu, inflater);
     }
 
@@ -125,33 +143,57 @@ public class FindStuff extends Fragment implements OnMapReadyCallback {
 
         @Override
         protected void onPostExecute(String s) {
-            try {
-                Set<LatLng> markerSet = new HashSet<>();
-                JSONArray mapArray = new JSONArray(s);
-                markerArray = mapArray;
-                for(int i = 0; i<= mapArray.length() - 1;i++){
-                    markerSet.add(new LatLng(Double.valueOf(mapArray.getJSONObject(i).getString("latitude")),Double.valueOf(mapArray.getJSONObject(i).getString("longitude"))));
-                }
-                System.out.println(markerSet);
-                List<LatLng> markerList = new ArrayList<>(markerSet);
-                for (int i = 0;i <= markerList.size() -1;i++){
-                    List<String> markerTagList = new ArrayList<>();
-                    String postName = "";
-                    for (int j = 0; j <= mapArray.length() - 1;j++){
-                        if (markerList.get(i).equals(new LatLng(Double.valueOf(mapArray.getJSONObject(j).getString("latitude")),Double.valueOf(mapArray.getJSONObject(j).getString("longitude"))))){
-                            postName = postName + mapArray.getJSONObject(j).getString("item_name").toUpperCase()+"\n";
-                            markerTagList.add(mapArray.getJSONObject(j).getString("post_id"));
-                        }
-                    }
-                    mMap.addMarker(new MarkerOptions().position(markerList.get(i)).title("Item").snippet(postName)).setTag(markerTagList);
-                }
+            populateMap(s,0);
+            queryFlag = false;
 
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
 
         }
     }
+
+    public void populateMap(String arrayResult,int resultCode){
+        try {
+            Set<LatLng> markerSet = new HashSet<>();
+            JSONArray mapArray = new JSONArray(arrayResult);
+            markerArray = mapArray;
+            for(int i = 0; i<= mapArray.length() - 1;i++) {
+                if (queryFlag) {
+                    if (mapArray.getJSONObject(i).getString("item_name").toLowerCase().equals(queryString.toLowerCase())) {
+                        markerSet.add(new LatLng(Double.valueOf(mapArray.getJSONObject(i).getString("latitude")), Double.valueOf(mapArray.getJSONObject(i).getString("longitude"))));
+                    }
+                }
+                else{
+                    markerSet.add(new LatLng(Double.valueOf(mapArray.getJSONObject(i).getString("latitude")), Double.valueOf(mapArray.getJSONObject(i).getString("longitude"))));
+                }
+            }
+
+            List<LatLng> markerList = new ArrayList<>(markerSet);
+            for (int i = 0;i <= markerList.size() -1;i++){
+                List<String> markerTagList = new ArrayList<>();
+                String postName = "";
+                for (int j = 0; j <= mapArray.length() - 1;j++) {
+                    if (queryFlag) {
+                        if (mapArray.getJSONObject(i).getString("item_name").toLowerCase().equals(queryString.toLowerCase())) {
+                            if (markerList.get(i).equals(new LatLng(Double.valueOf(mapArray.getJSONObject(j).getString("latitude")), Double.valueOf(mapArray.getJSONObject(j).getString("longitude"))))) {
+                                postName = postName + mapArray.getJSONObject(j).getString("item_name").toUpperCase() + "\n";
+                                markerTagList.add(mapArray.getJSONObject(j).getString("post_id"));
+                            }
+                        }
+                    }
+                    else{
+                        if (markerList.get(i).equals(new LatLng(Double.valueOf(mapArray.getJSONObject(j).getString("latitude")), Double.valueOf(mapArray.getJSONObject(j).getString("longitude"))))) {
+                            postName = postName + mapArray.getJSONObject(j).getString("item_name").toUpperCase() + "\n";
+                            markerTagList.add(mapArray.getJSONObject(j).getString("post_id"));
+                        }
+                    }
+                }
+                mMap.addMarker(new MarkerOptions().position(markerList.get(i)).title("Item").snippet(postName)).setTag(markerTagList);
+            }
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
     public void permissionHandller(){
         if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
             permission = true;
@@ -209,7 +251,7 @@ public class FindStuff extends Fragment implements OnMapReadyCallback {
                             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
                                     new LatLng(lastLocation.getLatitude(),
                                             lastLocation.getLongitude()), 10));
-                            mMap.addMarker(new MarkerOptions().position(new LatLng(lastLocation.getLatitude(),lastLocation.getLongitude())).title("Your Location"));
+                            mMap.addMarker(new MarkerOptions().position(new LatLng(lastLocation.getLatitude(),lastLocation.getLongitude())).title("Your Location")).showInfoWindow();
                         } else {
                             //mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mDefaultLocation, 20));
                             mMap.getUiSettings().setMyLocationButtonEnabled(false);
