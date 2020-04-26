@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent" android:layout_height="match_parent">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+    <TextView
+        android:id="@+id/headding"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="?attr/actionBarSize"
+        android:text="Select Item You Want To Donate"
+        android:textSize="24sp" />
+
+    <TextView
+        android:id="@+id/item"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/headding"
+        android:layout_marginTop="28dp"
+        android:text="SELECT ITEM"
+        android:textSize="20sp" />
+
+    <Spinner
+        android:id="@+id/itemSpinner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/item"
+        android:layout_marginTop="12dp"
+        android:spinnerMode="dropdown" />
+
+    <TextView
+        android:id="@+id/color"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/itemSpinner"
+        android:text="COLOR"
+        android:textSize="20sp"
+        android:layout_marginTop="28dp"/>
+
+    <Spinner
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/colorSpinner"
+        android:layout_below="@+id/color"
+        android:layout_marginTop="12dp"
+        android:spinnerMode="dropdown"/>
+
+    <TextView
+        android:id="@+id/type"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/colorSpinner"
+        android:text="TYPE"
+        android:textSize="20sp"
+        android:layout_marginTop="28dp"/>
+
+    <Spinner
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/typeSpinner"
+        android:layout_below="@+id/type"
+        android:layout_marginTop="12dp"
+        android:spinnerMode="dropdown"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/year"
+        android:layout_below="@+id/typeSpinner"
+        android:text="YEAR"
+        android:textSize="20sp"
+        android:layout_marginTop="28dp"/>
+
+    <Spinner
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/yearSpinner"
+        android:layout_marginTop="12dp"
+        android:layout_below="@+id/year"
+        android:spinnerMode="dropdown"/>
+
+
+            <Button
+                android:id="@+id/proceed"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/yearSpinner"
+                android:layout_alignParentBottom="true"
+                android:layout_marginBottom="0dp"
+                android:text="PROCEED" />
+
+
+
+        </RelativeLayout>
+
+    </ScrollView>
+</RelativeLayout>
