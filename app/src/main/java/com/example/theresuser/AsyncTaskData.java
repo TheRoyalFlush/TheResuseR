@@ -75,7 +75,7 @@ public class AsyncTaskData {
             HttpURLConnection connection = null;
             String idData = "";
             try {
-                url = new URL(BASE_URL + "posteditems");
+                url = new URL(BASE_URL + "allposteditems");
                 connection = (HttpURLConnection) url.openConnection();
                 connection.setReadTimeout(10000);
                 connection.setConnectTimeout(15000);
@@ -121,5 +121,61 @@ public class AsyncTaskData {
         }
         System.out.println(mapData);
         return mapData;
+    }
+
+    public static void claimItem(String itemId){
+        URL url = null;
+        HttpURLConnection connection = null;
+        final String methodPath="pickitem";
+        try {
+            url = new URL(BASE_URL + methodPath);
+            System.out.println(url);
+            connection = (HttpURLConnection) url.openConnection();
+            connection.setReadTimeout(10000);
+            connection.setConnectTimeout(15000);
+            connection.setRequestMethod("POST");
+            connection.setDoOutput(true);
+            connection.setFixedLengthStreamingMode(itemId.getBytes().length);
+            connection.setRequestProperty("Content-Type", "application/json");
+            PrintWriter out = new PrintWriter(connection.getOutputStream());
+            out.print(itemId);
+            out.close();
+            Log.i("error",new Integer(connection.getResponseCode()).toString());
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            connection.disconnect();
+        }
+    }
+
+    public static void carbonIntensity(String itemName) {
+        URL url = null;
+        HttpURLConnection connection = null;
+        final String methodPath="carbon_intensity";
+        try {
+            url = new URL(BASE_URL + methodPath);
+            System.out.println(url);
+            connection = (HttpURLConnection) url.openConnection();
+            connection.setReadTimeout(10000);
+            connection.setConnectTimeout(15000);
+            connection.setRequestMethod("POST");
+            connection.setDoOutput(true);
+            connection.setFixedLengthStreamingMode(itemName.getBytes().length);
+            connection.setRequestProperty("Content-Type", "application/json");
+            PrintWriter out = new PrintWriter(connection.getOutputStream());
+            out.print(itemName);
+            out.close();
+            Log.i("error",connection.getResponseMessage());
+            Scanner inStream = new Scanner(connection.getInputStream());
+            String d = "";
+            while (inStream.hasNextLine()) {
+                d += inStream.nextLine();
+            }
+            System.out.println(d);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            connection.disconnect();
+        }
     }
 }
