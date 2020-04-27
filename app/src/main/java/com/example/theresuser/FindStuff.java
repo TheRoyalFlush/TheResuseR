@@ -12,6 +12,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -22,6 +23,7 @@ import android.widget.ArrayAdapter;
 import android.widget.SearchView;
 
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
+import com.google.android.gms.common.api.internal.BackgroundDetector;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.places.GeoDataClient;
@@ -77,16 +79,23 @@ public class FindStuff extends Fragment implements OnMapReadyCallback {
 
         MapFragment mapFragment = (MapFragment)getChildFragmentManager().findFragmentById(R.id.mapView);
         mapFragment.getMapAsync(this);
-
         geoDataClient = Places.getGeoDataClient(getActivity(),null);
         placeDetectionClient = Places.getPlaceDetectionClient(getActivity(),null);
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getActivity());
 
 
-        PopulateMap populateMap = new PopulateMap();
-        populateMap.execute();
+        view.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if (keyCode == KeyEvent.KEYCODE_BACK){
+                    return true;
+                }
+                return false;
+            }
+        });
         return view;
     }
+
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -117,21 +126,26 @@ public class FindStuff extends Fragment implements OnMapReadyCallback {
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
+        System.out.println("mapready");
         mMap = googleMap;
         updateLocationUI();
         getDeviceLocation();
+        PopulateMap populateMap = new PopulateMap();
+        populateMap.execute();
 
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
-                if(markerArray != null){
-                    for(int i = 0; i<= markerArray.length() - 1;i++){
-                        Intent intent = new Intent(getActivity(),ItemDetails.class);
-                        intent.putExtra("Item", (ArrayList<String>) marker.getTag());
-                        if (markerArray != null){
-                            intent.putExtra("markerArray", String.valueOf(markerArray));
+                if(!marker.getTitle().equals("Your Location")) {
+                    if (markerArray != null) {
+                        for (int i = 0; i <= markerArray.length() - 1; i++) {
+                            Intent intent = new Intent(getActivity(), ItemDetails.class);
+                            intent.putExtra("Item", (ArrayList<String>) marker.getTag());
+                            if (markerArray != null) {
+                                intent.putExtra("markerArray", String.valueOf(markerArray));
+                            }
+                            startActivity(intent);
                         }
-                        startActivity(intent);
                     }
                 }
                 return false;
@@ -144,6 +158,7 @@ public class FindStuff extends Fragment implements OnMapReadyCallback {
     public class PopulateMap extends AsyncTask<String,Void,String>{
         @Override
         protected String doInBackground(String... strings) {
+            System.out.println("populate maps");
             String mapData = AsyncTaskData.getMapData();
             return mapData;
         }
@@ -159,8 +174,11 @@ public class FindStuff extends Fragment implements OnMapReadyCallback {
     }
 
     public void populateMap(String arrayResult,int resultCode){
-        mMap.clear();
-        getDeviceLocation();
+        if (mMap !=null){
+            mMap.clear();
+            getDeviceLocation();
+        }
+
         try {
             Set<LatLng> markerSet = new HashSet<>();
             JSONArray mapArray = new JSONArray(arrayResult);

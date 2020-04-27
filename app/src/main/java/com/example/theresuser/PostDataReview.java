@@ -1,7 +1,6 @@
 package com.example.theresuser;
 
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -9,18 +8,11 @@ import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
-
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 public class PostDataReview extends AppCompatActivity {
 
@@ -29,7 +21,7 @@ public class PostDataReview extends AppCompatActivity {
     Integer postId;
     Item itemObject;
     String color,type,year,item,carbonIntensity;
-
+    TextView itemName,itemYear,itemType,itemColor,carbonIntensityMessage;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,8 +43,18 @@ public class PostDataReview extends AppCompatActivity {
             year = this.getSharedPreferences("post_data",MODE_PRIVATE).getString("year_range",null);
             carbonIntensity = this.getSharedPreferences("post_data",MODE_PRIVATE).getString("carbon_intensity",null);
         }
-        TextView textView = (TextView)findViewById(R.id.reviewText);
-        textView.setText(color+"\n"+type+"\n"+item+"\n"+year+"\n"+carbonIntensity);
+        itemName = (TextView)findViewById(R.id.itemName);
+        itemColor = (TextView)findViewById(R.id.item_color);
+        itemType = (TextView)findViewById(R.id.item_type);
+        itemYear = (TextView)findViewById(R.id.item_year);
+        carbonIntensityMessage = (TextView)findViewById(R.id.carbon_message);
+
+        itemType.setText(type);
+        itemYear.setText(year);
+        itemColor.setText(color);
+        itemName.setText(item);
+        carbonIntensityMessage.setText(item+" contains"+carbonIntensity+" carbon intensity(amount of CO2 in kg per kg of the item)."+"\n"+" Thank you! for reducing that from going into atmosphere by providing the item for reuse through Resuser");
+
         itemObject = new Item(postId,colorId,itemId,yearId,typeId,latitude,longitude);
     }
 

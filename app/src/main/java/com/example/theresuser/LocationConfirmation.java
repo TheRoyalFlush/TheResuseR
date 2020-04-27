@@ -10,15 +10,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.location.Criteria;
 import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -33,7 +30,6 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.gson.JsonArray;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -120,11 +116,16 @@ public class LocationConfirmation extends FragmentActivity implements OnMapReady
                     public void onComplete(@NonNull Task task) {
                         if (task.isSuccessful()) {
                             lastLocation = (Location) task.getResult();
-                            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
-                                    new LatLng(lastLocation.getLatitude(),
-                                            lastLocation.getLongitude()), 20));
-                            mMap.addMarker(new MarkerOptions().position(new LatLng(lastLocation.getLatitude(),lastLocation.getLongitude())));
-                        } else {
+                            if (lastLocation != null) {
+                                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
+                                        new LatLng(lastLocation.getLatitude(),
+                                                lastLocation.getLongitude()), 20));
+                                mMap.addMarker(new MarkerOptions().position(new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude())));
+                            }
+                            else{
+                                Toast.makeText(getApplication(),"Check you Location Settings",Toast.LENGTH_LONG).show();
+                            }
+                            } else {
                             //mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mDefaultLocation, 20));
                             mMap.getUiSettings().setMyLocationButtonEnabled(false);
                         }

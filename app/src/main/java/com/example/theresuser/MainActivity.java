@@ -29,16 +29,6 @@ public class MainActivity extends AppCompatActivity  {
         return true;
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
 
     public void DonateStuff(View view){
 
@@ -46,14 +36,14 @@ public class MainActivity extends AppCompatActivity  {
         fragment = new DonateStuff();
         FragmentManager fragmentManager = getFragmentManager();
         fragmentManager.beginTransaction().replace(R.id.frame_layout,
-                fragment).commit();
+                fragment).addToBackStack("back").commit();
     }
     public void FindStuff(View view){
         Fragment fragment = null;
         fragment = new FindStuff();
         FragmentManager fragmentManager = getFragmentManager();
         fragmentManager.beginTransaction().replace(R.id.frame_layout,
-                fragment).commit();
+                fragment).addToBackStack("back").commit();
     }
 
 }

@@ -16,7 +16,8 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="?attr/actionBarSize"
         android:text="Select Item You Want To Donate"
-        android:textSize="24sp" />
+        android:textSize="24sp"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"/>
 
     <TextView
         android:id="@+id/item"
@@ -25,7 +26,8 @@
         android:layout_below="@+id/headding"
         android:layout_marginTop="28dp"
         android:text="SELECT ITEM"
-        android:textSize="20sp" />
+        android:textSize="20sp"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"/>
 
     <com.toptoche.searchablespinnerlibrary.SearchableSpinner
         android:id="@+id/itemSpinner"
@@ -42,7 +44,8 @@
         android:layout_below="@+id/itemSpinner"
         android:text="COLOR"
         android:textSize="20sp"
-        android:layout_marginTop="28dp"/>
+        android:layout_marginTop="28dp"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"/>
 
     <com.toptoche.searchablespinnerlibrary.SearchableSpinner
         android:layout_width="match_parent"
@@ -59,7 +62,9 @@
         android:layout_below="@+id/colorSpinner"
         android:text="TYPE"
         android:textSize="20sp"
-        android:layout_marginTop="28dp"/>
+        android:layout_marginTop="28dp"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        />
 
     <com.toptoche.searchablespinnerlibrary.SearchableSpinner
         android:layout_width="match_parent"
@@ -76,9 +81,11 @@
         android:layout_below="@+id/typeSpinner"
         android:text="YEAR"
         android:textSize="20sp"
-        android:layout_marginTop="28dp"/>
+        android:layout_marginTop="28dp"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        />
 
-    <Spinner
+    <com.toptoche.searchablespinnerlibrary.SearchableSpinner
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/yearSpinner"
@@ -94,7 +101,9 @@
                 android:layout_below="@+id/yearSpinner"
                 android:layout_alignParentBottom="true"
                 android:layout_marginBottom="0dp"
-                android:text="PROCEED" />
+                android:text="PROCEED"
+                android:background="#009688"
+                android:textColor="#FFFFFF"/>
 
 
         </RelativeLayout>

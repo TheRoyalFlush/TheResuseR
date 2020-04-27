@@ -59,7 +59,7 @@ public class ItemDetails extends AppCompatActivity {
                 e.printStackTrace();
             }
         }
-        final ArrayAdapter<String> itemListAdapter = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item, itemList);
+        final ArrayAdapter<String> itemListAdapter = new ArrayAdapter<String>(this,R.layout.list_item_text, itemList);
         itemListAdapter.setDropDownViewResource(android.R.layout.simple_expandable_list_item_1);
         listView.setAdapter(itemListAdapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -87,6 +87,10 @@ public class ItemDetails extends AppCompatActivity {
 
     }
 
+    @Override
+    public void onBackPressed() {
+    }
+
     public class CarbonIntensityAsyncTask extends AsyncTask<String,Void,String> {
 
         @Override
@@ -101,8 +105,9 @@ public class ItemDetails extends AppCompatActivity {
         protected void onPostExecute(String s) {
             String carbonIntensity = "";
             try {
-                JSONObject carbonObject = new JSONObject(s);
-                carbonObject.getString("carbon_intensity");
+                System.out.println(s);
+                JSONArray carbonArray = new JSONArray(s);
+                carbonIntensity = carbonArray.getJSONObject(0).getString("carbon_intensity");
             } catch (JSONException e) {
                 e.printStackTrace();
             }

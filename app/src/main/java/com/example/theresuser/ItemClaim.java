@@ -1,5 +1,7 @@
 package com.example.theresuser;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.location.Location;
 import android.net.Uri;
@@ -22,7 +24,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class ItemClaim extends AppCompatActivity {
-    String data,carbonIntensity,latitude,longitude,userLatitude,userLongitude;
+    String data,carbonIntensity,latitude,longitude,userLatitude,userLongitude,name,type,year,color;
+    TextView itemName,itemYear,itemType,itemColor,carbonIntensityMessage;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -33,13 +36,24 @@ public class ItemClaim extends AppCompatActivity {
         carbonIntensity = getApplicationContext().getSharedPreferences("claim_data",MODE_PRIVATE).getString("carbon_intensity",null);
         userLatitude = getApplicationContext().getSharedPreferences("claim_data",MODE_PRIVATE).getString("user_latitude",null);
         userLongitude = getApplicationContext().getSharedPreferences("claim_data",MODE_PRIVATE).getString("user_longitude",null);
-        TextView textView = (TextView)findViewById(R.id.tv);
+        itemName = (TextView)findViewById(R.id.item_name);
+        itemColor = (TextView)findViewById(R.id.item_color);
+        itemType = (TextView)findViewById(R.id.item_type);
+        itemYear = (TextView)findViewById(R.id.item_year);
+        carbonIntensityMessage = (TextView)findViewById(R.id.carbon_message);
         try {
             JSONObject jsonObject = new JSONObject(data);
             latitude = jsonObject.getString("latitude");
             longitude = jsonObject.getString("longitude");
-            textView.setText(jsonObject.getString("item_name")+"\n"+jsonObject.getString("type_name")+
-                    "\n"+jsonObject.getString("year_range")+"\n"+carbonIntensity);
+            name = jsonObject.getString("item_name");
+            type = jsonObject.getString("type_name");
+            year = jsonObject.getString("year_range");
+            color = jsonObject.getString("color_name");
+            itemName.setText(name);
+            itemColor.setText(color);
+            itemType.setText(type);
+            itemYear.setText(year);
+            carbonIntensityMessage.setText(name+" contains "+carbonIntensity+" carbon intensity(amount of CO2 in kg per kg of the item). Thank you! for reducing that from going into atmosphere by picking the item for reuse through Resuser");
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -79,7 +93,17 @@ public class ItemClaim extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(String s) {
+            AlertDialog.Builder builder =new AlertDialog.Builder(ItemClaim.this);
+            builder.setTitle("Item Claimed!!").setMessage("The item has been claimed by you.").setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    Intent intent = new Intent(getApplicationContext(),MainActivity.class);
+                    startActivity(intent);
+                }
+            });
 
+            AlertDialog alertDialog =builder.create();
+            alertDialog.show();
         }
     }
 

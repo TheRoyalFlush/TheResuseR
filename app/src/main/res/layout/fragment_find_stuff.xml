@@ -3,9 +3,11 @@
     android:layout_width="match_parent" android:layout_height="match_parent">
 
     <fragment
-    android:layout_width="match_parent"
-    android:layout_height="500dp"
-    android:id="@+id/mapView"
-    android:layout_marginTop="?attr/actionBarSize"
-    android:name="com.google.android.gms.maps.MapFragment"/>
+        android:id="@+id/mapView"
+        android:name="com.google.android.gms.maps.MapFragment"
+        android:layout_width="match_parent"
+        android:layout_height="767dp"
+        android:layout_alignParentBottom="true"
+        android:layout_marginTop="?attr/actionBarSize"
+        android:layout_marginBottom="0dp" />
 </RelativeLayout>
