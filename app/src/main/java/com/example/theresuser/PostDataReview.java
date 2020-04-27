@@ -76,14 +76,8 @@ public class PostDataReview extends AppCompatActivity {
         @Override
         protected void onPostExecute(String s) {
             AlertDialog.Builder builder =new AlertDialog.Builder(PostDataReview.this);
-            builder.setTitle("Post Created").setMessage("Your post has been uploaded and can be seen by people nearby.\n" +
-                    "Would you like to post more items?").setPositiveButton("Post New Item", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    Intent intent = new Intent(getApplicationContext(),DonateStuff.class);
-                    startActivity(intent);
-                }
-            }).setNegativeButton("No", new DialogInterface.OnClickListener() {
+            builder.setTitle("Post Created").setMessage("Your post has been uploaded and can be seen by people nearby.")
+                   .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     Intent intent = new Intent(getApplicationContext(),MainActivity.class);
