@@ -31,7 +31,7 @@ import java.util.List;
 
 import androidx.annotation.RequiresApi;
 
-
+//Cass populating the options for users to selcet the item to be posted
 public class DonateStuff extends Fragment {
     View view;
     Spinner colorSpinner,itemSpinner,typeSpinner,yearSpinner;
@@ -54,6 +54,7 @@ public class DonateStuff extends Fragment {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getActivity(),LocationConfirmation.class);
+                //Adding all the data to the sharedpreference to be accessed later in the application
                 SharedPreferences sharedPreferences = getActivity().getSharedPreferences("post_data", Context.MODE_PRIVATE);
                 SharedPreferences.Editor editor =sharedPreferences.edit();
 
@@ -74,6 +75,7 @@ public class DonateStuff extends Fragment {
                 startActivity(intent);
             }
         });
+        //Sending the user to the landing page when back button is pressed
         view.setOnKeyListener(new View.OnKeyListener() {
             @Override
             public boolean onKey(View v, int keyCode, KeyEvent event) {
@@ -87,7 +89,7 @@ public class DonateStuff extends Fragment {
     }
 
 
-
+    //Populating all the options for the items to be posted
     public class ItemDataAsyncTaks extends AsyncTask<String,Void,String>{
 
         @Override
@@ -99,6 +101,7 @@ public class DonateStuff extends Fragment {
         @Override
         protected void onPostExecute(String s) {
             try {
+                //Populating the drop down menues for the user to select the item to be posted
                 JSONObject mainObject = new JSONObject(s);
                 colorArray = new JSONArray(mainObject.getString("Color"));
                 itemArray = new JSONArray(mainObject.getString("Item"));

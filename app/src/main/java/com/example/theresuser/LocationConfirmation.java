@@ -36,7 +36,7 @@ import org.json.JSONException;
 
 import java.util.ArrayList;
 import java.util.List;
-
+//Class responsible for getting the user location to be able to post the item
 public class LocationConfirmation extends FragmentActivity implements OnMapReadyCallback {
 
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 101;
@@ -61,7 +61,7 @@ public class LocationConfirmation extends FragmentActivity implements OnMapReady
         placeDetectionClient = Places.getPlaceDetectionClient(this,null);
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
     }
-
+    //Handelling permissions for the application to get the users location services
     public void permissionHandller(){
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
             permission = true;
@@ -70,7 +70,7 @@ public class LocationConfirmation extends FragmentActivity implements OnMapReady
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION},PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
         }
     }
-
+    //Handling the permission request for the user
     @Override
     public void onRequestPermissionsResult(int requestCode,
                                            @NonNull String[] permissions,
@@ -86,7 +86,7 @@ public class LocationConfirmation extends FragmentActivity implements OnMapReady
         }
         updateLocationUI();
     }
-
+    //Updating the location of the user
     private void updateLocationUI() {
         if (mMap == null) {
             return;
@@ -106,7 +106,7 @@ public class LocationConfirmation extends FragmentActivity implements OnMapReady
         }
     }
 
-
+    //Getting the location of the user
     private void getDeviceLocation() {
         try {
             if (permission) {
@@ -136,7 +136,7 @@ public class LocationConfirmation extends FragmentActivity implements OnMapReady
             Log.e("Exception: %s", e.getMessage());
         }
     }
-
+    //Calling the map to initialize when the activity is launched
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
@@ -144,13 +144,13 @@ public class LocationConfirmation extends FragmentActivity implements OnMapReady
         updateLocationUI();
         getDeviceLocation();
     }
-
+    //Generating a unique id for the item to be posted
     public void SendData(View view){
         IdGenerator idGenerator = new IdGenerator();
         idGenerator.execute();
     }
 
-
+//Calling the api to generate the user id
     public class IdGenerator extends AsyncTask<String,Void,String>{
 
         @Override
@@ -188,7 +188,7 @@ public class LocationConfirmation extends FragmentActivity implements OnMapReady
             carbonIntensityAsyncTask.execute();
         }
     }
-
+    //Getting the carbon intensity of the item posted by the user
     public class CarbonIntensityAsyncTask extends AsyncTask<String,Void,String>{
 
         @Override

@@ -55,7 +55,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-
+//Class to get the users location and populate the map with all the items that are available
 public class FindStuff extends Fragment implements OnMapReadyCallback {
     View view;
     private GoogleMap mMap;
@@ -83,7 +83,7 @@ public class FindStuff extends Fragment implements OnMapReadyCallback {
         placeDetectionClient = Places.getPlaceDetectionClient(getActivity(),null);
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getActivity());
 
-
+        //Sending the user to the landing page when back button is pressed
         view.setOnKeyListener(new View.OnKeyListener() {
             @Override
             public boolean onKey(View v, int keyCode, KeyEvent event) {
@@ -123,7 +123,7 @@ public class FindStuff extends Fragment implements OnMapReadyCallback {
         });
         super.onCreateOptionsMenu(menu, inflater);
     }
-
+    //Calling the map to initialize when the activity is launched
     @Override
     public void onMapReady(GoogleMap googleMap) {
         System.out.println("mapready");
@@ -132,7 +132,7 @@ public class FindStuff extends Fragment implements OnMapReadyCallback {
         getDeviceLocation();
         PopulateMap populateMap = new PopulateMap();
         populateMap.execute();
-
+        //Setting the marker for the users location on the map
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
@@ -154,7 +154,7 @@ public class FindStuff extends Fragment implements OnMapReadyCallback {
 
     }
 
-
+    //Getting the maps data with the markers and the items posted
     public class PopulateMap extends AsyncTask<String,Void,String>{
         @Override
         protected String doInBackground(String... strings) {
@@ -172,7 +172,7 @@ public class FindStuff extends Fragment implements OnMapReadyCallback {
 
         }
     }
-
+    //Poppulating the map with the markerd of the items posted
     public void populateMap(String arrayResult,int resultCode){
         if (mMap !=null){
             mMap.clear();
@@ -222,7 +222,7 @@ public class FindStuff extends Fragment implements OnMapReadyCallback {
             e.printStackTrace();
         }
     }
-
+    //Handelling permissions for the application to get the users location services
     public void permissionHandller(){
         if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
             permission = true;
@@ -231,7 +231,7 @@ public class FindStuff extends Fragment implements OnMapReadyCallback {
             ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION},PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
         }
     }
-
+    //Handling the permission request for the user
     @Override
     public void onRequestPermissionsResult(int requestCode,
                                            @NonNull String[] permissions,
@@ -247,7 +247,7 @@ public class FindStuff extends Fragment implements OnMapReadyCallback {
         }
         updateLocationUI();
     }
-
+    //Updating the location of the user
     private void updateLocationUI() {
         if (mMap == null) {
             return;
@@ -267,7 +267,7 @@ public class FindStuff extends Fragment implements OnMapReadyCallback {
         }
     }
 
-
+    //Getting the location of the user
     private void getDeviceLocation() {
         try {
             if (permission) {

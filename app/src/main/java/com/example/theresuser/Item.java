@@ -1,5 +1,5 @@
 package com.example.theresuser;
-
+//Class to generate an object of class item to be posted online in the database
 public class Item {
 
     public Integer getPost_id() {

@@ -26,7 +26,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-
+//Class responsible for showing user the list of items available at a location
 public class ItemDetails extends AppCompatActivity {
     JSONArray markerArray;
     String name;
@@ -59,6 +59,7 @@ public class ItemDetails extends AppCompatActivity {
                 e.printStackTrace();
             }
         }
+        //Search feature for the user to search for stuff
         final ArrayAdapter<String> itemListAdapter = new ArrayAdapter<String>(this,R.layout.list_item_text, itemList);
         itemListAdapter.setDropDownViewResource(android.R.layout.simple_expandable_list_item_1);
         listView.setAdapter(itemListAdapter);
@@ -87,16 +88,13 @@ public class ItemDetails extends AppCompatActivity {
 
     }
 
-    @Override
-    public void onBackPressed() {
-    }
 
+    //Getting the carbon intensity of the item selected by the user
     public class CarbonIntensityAsyncTask extends AsyncTask<String,Void,String> {
 
         @Override
         protected String doInBackground(String... strings) {
             String itemName = "{\"item_name\":\""+name+"\"}";
-            System.out.println(itemName);
             String carbonIntensity = AsyncTaskData.carbonIntensity(itemName);
             return carbonIntensity;
         }
@@ -105,13 +103,12 @@ public class ItemDetails extends AppCompatActivity {
         protected void onPostExecute(String s) {
             String carbonIntensity = "";
             try {
-                System.out.println(s);
                 JSONArray carbonArray = new JSONArray(s);
                 carbonIntensity = carbonArray.getJSONObject(0).getString("carbon_intensity");
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-
+            //Saving the data of carbon intensity to be used in the application
             SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences("claim_data", Context.MODE_PRIVATE);
             SharedPreferences.Editor editor =sharedPreferences.edit();
             editor.putString("carbon_intensity",carbonIntensity);

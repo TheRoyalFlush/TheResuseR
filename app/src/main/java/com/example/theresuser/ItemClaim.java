@@ -22,7 +22,7 @@ import android.widget.Toast;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
+//Class responsible for handeling the data when user claims an object
 public class ItemClaim extends AppCompatActivity {
     String data,carbonIntensity,latitude,longitude,userLatitude,userLongitude,name,type,year,color;
     TextView itemName,itemYear,itemType,itemColor,carbonIntensityMessage;
@@ -32,6 +32,7 @@ public class ItemClaim extends AppCompatActivity {
         setContentView(R.layout.activity_item_claim);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        //Getting all the saved data of the item that the user has selcted
         data = getApplicationContext().getSharedPreferences("claim_data",MODE_PRIVATE).getString("item_content",null);
         carbonIntensity = getApplicationContext().getSharedPreferences("claim_data",MODE_PRIVATE).getString("carbon_intensity",null);
         userLatitude = getApplicationContext().getSharedPreferences("claim_data",MODE_PRIVATE).getString("user_latitude",null);
@@ -42,6 +43,7 @@ public class ItemClaim extends AppCompatActivity {
         itemYear = (TextView)findViewById(R.id.item_year);
         carbonIntensityMessage = (TextView)findViewById(R.id.carbon_message);
         try {
+            //Populating all the data for the user to review
             JSONObject jsonObject = new JSONObject(data);
             latitude = jsonObject.getString("latitude");
             longitude = jsonObject.getString("longitude");
@@ -61,18 +63,18 @@ public class ItemClaim extends AppCompatActivity {
 
 
     }
-
+    //Getting the google maps with the navigation from users location to the item
     public void Navigate(View view){
         String uri = "http://maps.google.com/maps?saddr=" + userLatitude + "," + userLongitude + "&daddr=" + latitude + "," + longitude;
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
         startActivity(intent);
     }
-
+    //Function to request a claim on an item
     public void Claim(View view){
         ClaimAsyncTask claimAsyncTask = new ClaimAsyncTask();
         claimAsyncTask.execute();
     }
-
+    //Running the api to save the data of claimed object
     public class ClaimAsyncTask extends AsyncTask<String,Void,String>{
 
         @Override

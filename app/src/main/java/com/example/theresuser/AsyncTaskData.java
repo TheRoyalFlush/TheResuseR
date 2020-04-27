@@ -9,11 +9,12 @@ import java.io.PrintWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Scanner;
-
+//Class containing all the asynctasks to call the apis for get and post
 public class AsyncTaskData {
 
     public static final String BASE_URL ="http://theresuser.me/";
 
+    //Getting the data of the Spinners for selection the item kept on the kerb.
     public static String PopulateSpinner(String field){
         URL url = null;
         StringBuffer sb = null;
@@ -41,6 +42,7 @@ public class AsyncTaskData {
         return spinnerData;
     }
 
+    //Posting the item online to the database
     public static void postItem(Item item){
         URL url = null;
         HttpURLConnection connection = null;
@@ -69,6 +71,7 @@ public class AsyncTaskData {
         }
     }
 
+    //Generating a new unique id for the posts by user
     public static String generateId() {
             URL url = null;
             StringBuffer sb = null;
@@ -96,6 +99,7 @@ public class AsyncTaskData {
 
         }
 
+        //Api call for getting the items posted to be poppulated on the maps
     public static String getMapData() {
         URL url = null;
         StringBuffer sb = null;
@@ -123,6 +127,7 @@ public class AsyncTaskData {
         return mapData;
     }
 
+    //Post to api if someone claims the item
     public static void claimItem(String itemId){
         URL url = null;
         HttpURLConnection connection = null;
@@ -148,6 +153,7 @@ public class AsyncTaskData {
         }
     }
 
+    //Getting the carbon intensity of the items
     public static String carbonIntensity(String itemName) {
         URL url = null;
         HttpURLConnection connection = null;

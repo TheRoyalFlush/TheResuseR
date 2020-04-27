@@ -13,7 +13,7 @@ import androidx.appcompat.widget.Toolbar;
 
 import android.view.View;
 import android.widget.TextView;
-
+//Class handling the data posted in the database of the items that user is donating
 public class PostDataReview extends AppCompatActivity {
 
     Integer colorId,typeId,itemId,yearId;
@@ -30,6 +30,7 @@ public class PostDataReview extends AppCompatActivity {
         setSupportActionBar(toolbar);
         SharedPreferences sharedPreferences = getApplication().getSharedPreferences("post_data", Context.MODE_PRIVATE);
         if (sharedPreferences != null){
+            //Getting the data saved in the shared preference
             colorId = Integer.parseInt(this.getSharedPreferences("post_data",MODE_PRIVATE).getString("color",null));
             typeId = Integer.parseInt(this.getSharedPreferences("post_data",MODE_PRIVATE).getString("type",null));
             itemId = Integer.parseInt(this.getSharedPreferences("post_data",MODE_PRIVATE).getString("item",null));
@@ -49,6 +50,7 @@ public class PostDataReview extends AppCompatActivity {
         itemYear = (TextView)findViewById(R.id.item_year);
         carbonIntensityMessage = (TextView)findViewById(R.id.carbon_message);
 
+        //Showing the details of the items that the user is posting
         itemType.setText(type);
         itemYear.setText(year);
         itemColor.setText(color);
@@ -62,7 +64,7 @@ public class PostDataReview extends AppCompatActivity {
         SendDataAysnc sendDataAysnc = new SendDataAysnc();
         sendDataAysnc.execute();
     }
-
+//Calling the api to save the item into the online database
     public class SendDataAysnc extends AsyncTask<String,Void,String> {
 
         @Override
