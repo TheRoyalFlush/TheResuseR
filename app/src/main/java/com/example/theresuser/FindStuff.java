@@ -2,7 +2,9 @@ package com.example.theresuser;
 
 import android.Manifest;
 import android.app.FragmentTransaction;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.AsyncTask;
@@ -16,6 +18,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.SearchView;
 
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
@@ -28,7 +31,6 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -39,6 +41,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 
 import android.app.FragmentManager;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -63,6 +66,7 @@ public class FindStuff extends Fragment implements OnMapReadyCallback {
     JSONArray markerArray;
     boolean queryFlag = false;
     String queryString = "";
+    List<String> nameList = new ArrayList<>();
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     @Override
@@ -88,10 +92,14 @@ public class FindStuff extends Fragment implements OnMapReadyCallback {
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.search_menu,menu);
         MenuItem menuItem = menu.findItem(R.id.searchMenu);
-        SearchView searchView = (SearchView)menuItem.getActionView();
+        final SearchView searchView = (SearchView)menuItem.getActionView();
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
+                if (!nameList.contains(query)){
+                    Toast.makeText(getActivity(),"No Items Found",Toast.LENGTH_LONG).show();
+                    return false;
+                }
                 queryFlag = true;
                 queryString = query;
                 PopulateMap populateMap = new PopulateMap();
@@ -101,7 +109,6 @@ public class FindStuff extends Fragment implements OnMapReadyCallback {
 
             @Override
             public boolean onQueryTextChange(String newText) {
-
                 return false;
             }
         });
@@ -130,6 +137,7 @@ public class FindStuff extends Fragment implements OnMapReadyCallback {
                 return false;
             }
         });
+
     }
 
 
@@ -151,6 +159,8 @@ public class FindStuff extends Fragment implements OnMapReadyCallback {
     }
 
     public void populateMap(String arrayResult,int resultCode){
+        mMap.clear();
+        getDeviceLocation();
         try {
             Set<LatLng> markerSet = new HashSet<>();
             JSONArray mapArray = new JSONArray(arrayResult);
@@ -163,6 +173,7 @@ public class FindStuff extends Fragment implements OnMapReadyCallback {
                 }
                 else{
                     markerSet.add(new LatLng(Double.valueOf(mapArray.getJSONObject(i).getString("latitude")), Double.valueOf(mapArray.getJSONObject(i).getString("longitude"))));
+                    nameList.add(mapArray.getJSONObject(i).getString("item_name"));
                 }
             }
 
@@ -251,7 +262,12 @@ public class FindStuff extends Fragment implements OnMapReadyCallback {
                             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
                                     new LatLng(lastLocation.getLatitude(),
                                             lastLocation.getLongitude()), 10));
-                            mMap.addMarker(new MarkerOptions().position(new LatLng(lastLocation.getLatitude(),lastLocation.getLongitude())).title("Your Location")).showInfoWindow();
+                            mMap.addMarker(new MarkerOptions().position(new LatLng(lastLocation.getLatitude(),lastLocation.getLongitude())).title("Your Location").draggable(true)).showInfoWindow();
+                            SharedPreferences sharedPreferences = getActivity().getSharedPreferences("claim_data", Context.MODE_PRIVATE);
+                            SharedPreferences.Editor editor =sharedPreferences.edit();
+                            editor.putString("user_latitude", String.valueOf(lastLocation.getLatitude()));
+                            editor.putString("user_longitude", String.valueOf(lastLocation.getLongitude()));
+                            editor.apply();
                         } else {
                             //mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mDefaultLocation, 20));
                             mMap.getUiSettings().setMyLocationButtonEnabled(false);

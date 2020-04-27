@@ -57,11 +57,15 @@ public class DonateStuff extends Fragment {
                 SharedPreferences.Editor editor =sharedPreferences.edit();
 
                 try {
-                    System.out.println(colorArray.getJSONObject(colorSpinner.getSelectedItemPosition()).getString("color_id"));
                     editor.putString("color",colorArray.getJSONObject(colorSpinner.getSelectedItemPosition()).getString("color_id"));
                     editor.putString("item",itemArray.getJSONObject(itemSpinner.getSelectedItemPosition()).getString("item_id"));
                     editor.putString("type",typeArray.getJSONObject(typeSpinner.getSelectedItemPosition()).getString("type_id"));
                     editor.putString("year",yearArray.getJSONObject(yearSpinner.getSelectedItemPosition()).getString("year_id"));
+                    editor.putString("color_name",colorArray.getJSONObject(colorSpinner.getSelectedItemPosition()).getString("color_name"));
+                    editor.putString("item_name",itemArray.getJSONObject(itemSpinner.getSelectedItemPosition()).getString("item_name"));
+                    editor.putString("type_name",typeArray.getJSONObject(typeSpinner.getSelectedItemPosition()).getString("type_name"));
+                    editor.putString("year_range",yearArray.getJSONObject(yearSpinner.getSelectedItemPosition()).getString("year_range"));
+
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }

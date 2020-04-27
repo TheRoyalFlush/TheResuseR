@@ -6,6 +6,9 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 
 import android.Manifest;
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Criteria;
 import android.location.Location;
@@ -142,24 +145,10 @@ public class LocationConfirmation extends FragmentActivity implements OnMapReady
     }
 
     public void SendData(View view){
-        System.out.println(this.getSharedPreferences("post_data",MODE_PRIVATE).getString("color_id",null));
-        colorId = Integer.parseInt(this.getSharedPreferences("post_data",MODE_PRIVATE).getString("color",null));
-        typeId = Integer.parseInt(this.getSharedPreferences("post_data",MODE_PRIVATE).getString("type",null));
-        itemId = Integer.parseInt(this.getSharedPreferences("post_data",MODE_PRIVATE).getString("item",null));
-        yearId = Integer.parseInt(this.getSharedPreferences("post_data",MODE_PRIVATE).getString("year",null));
-
         IdGenerator idGenerator = new IdGenerator();
         idGenerator.execute();
     }
 
-    public class SendDataAysnc extends AsyncTask<String,Void,String> {
-
-        @Override
-        protected String doInBackground(String... strings) {
-            AsyncTaskData.postItem(item);
-            return null;
-        }
-    }
 
     public class IdGenerator extends AsyncTask<String,Void,String>{
 
@@ -188,10 +177,42 @@ public class LocationConfirmation extends FragmentActivity implements OnMapReady
             } catch (JSONException e) {
                 e.printStackTrace();
             }
+            SharedPreferences sharedPreferences = getApplication().getSharedPreferences("post_data", Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor =sharedPreferences.edit();
+            editor.putFloat("latitude",(float)lastLocation.getLatitude());
+            editor.putFloat("longitude",(float)lastLocation.getLongitude());
+            editor.putInt("post_id",flag+1);
+            editor.apply();
+            CarbonIntensityAsyncTask carbonIntensityAsyncTask = new CarbonIntensityAsyncTask();
+            carbonIntensityAsyncTask.execute();
+        }
+    }
 
-            item = new Item(flag+1,colorId,itemId,yearId,typeId,(float)lastLocation.getLatitude(),(float)lastLocation.getLongitude());
-            SendDataAysnc sendDataAysnc = new SendDataAysnc();
-            sendDataAysnc.execute();
+    public class CarbonIntensityAsyncTask extends AsyncTask<String,Void,String>{
+
+        @Override
+        protected String doInBackground(String... strings) {
+            String name = getApplicationContext().getSharedPreferences("post_data",MODE_PRIVATE).getString("item_name",null);
+            String itemName = "{\"item_name\":\""+name+"\"}";
+            System.out.println(itemName);
+            String carbonIntensity = AsyncTaskData.carbonIntensity(itemName);
+            return carbonIntensity;
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            try {
+                JSONArray carbonIntensityArray = new JSONArray(s);
+                String carbonIntensity = carbonIntensityArray.getJSONObject(0).getString("carbon_intensity");
+                SharedPreferences sharedPreferences = getApplication().getSharedPreferences("post_data", Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor =sharedPreferences.edit();
+                editor.putString("carbon_intensity",carbonIntensity);
+                editor.apply();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            Intent intent = new Intent(getApplicationContext(),PostDataReview.class);
+            startActivity(intent);
         }
     }
 }

@@ -1,7 +1,10 @@
 package com.example.theresuser;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -18,6 +21,7 @@ import android.widget.TextView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +29,7 @@ import java.util.Locale;
 
 public class ItemDetails extends AppCompatActivity {
     JSONArray markerArray;
+    String name;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,28 +65,55 @@ public class ItemDetails extends AppCompatActivity {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                System.out.println(position);
                 String itemContent = "";
                 for (int i = 0; i <= markerArray.length() -1;i++){
                     try {
                         if (markerArray.getJSONObject(i).getString("post_id").equals(postId.get(position))){
                             itemContent = String.valueOf(markerArray.getJSONObject(i));
+                            name = markerArray.getJSONObject(i).getString("item_name");
+                            SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences("claim_data", Context.MODE_PRIVATE);
+                            SharedPreferences.Editor editor =sharedPreferences.edit();
+                            editor.putString("item_content",itemContent);
+                            editor.apply();
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
                 }
-                Intent intent = new Intent(getApplicationContext(),ItemClaim.class);
-                intent.putExtra("ItemDetails",itemContent);
-                startActivity(intent);
+                CarbonIntensityAsyncTask carbonIntensityAsyncTask = new CarbonIntensityAsyncTask();
+                carbonIntensityAsyncTask.execute();
             }
         });
 
     }
 
-    public void MapsOpen(View view){
-        String uri = "http://maps.google.com/maps?saddr=" + "-37.879154" + "," + "145.53172";
-        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
-        startActivity(intent);
+    public class CarbonIntensityAsyncTask extends AsyncTask<String,Void,String> {
+
+        @Override
+        protected String doInBackground(String... strings) {
+            String itemName = "{\"item_name\":\""+name+"\"}";
+            System.out.println(itemName);
+            String carbonIntensity = AsyncTaskData.carbonIntensity(itemName);
+            return carbonIntensity;
         }
+
+        @Override
+        protected void onPostExecute(String s) {
+            String carbonIntensity = "";
+            try {
+                JSONObject carbonObject = new JSONObject(s);
+                carbonObject.getString("carbon_intensity");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences("claim_data", Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor =sharedPreferences.edit();
+            editor.putString("carbon_intensity",carbonIntensity);
+            editor.apply();
+            Intent intent = new Intent(getApplicationContext(),ItemClaim.class);
+            startActivity(intent);
+        }
+    }
+
 }

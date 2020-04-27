@@ -148,10 +148,11 @@ public class AsyncTaskData {
         }
     }
 
-    public static void carbonIntensity(String itemName) {
+    public static String carbonIntensity(String itemName) {
         URL url = null;
         HttpURLConnection connection = null;
         final String methodPath="carbon_intensity";
+        String carbonData = "";
         try {
             url = new URL(BASE_URL + methodPath);
             System.out.println(url);
@@ -167,15 +168,15 @@ public class AsyncTaskData {
             out.close();
             Log.i("error",connection.getResponseMessage());
             Scanner inStream = new Scanner(connection.getInputStream());
-            String d = "";
             while (inStream.hasNextLine()) {
-                d += inStream.nextLine();
+                carbonData += inStream.nextLine();
             }
-            System.out.println(d);
+            System.out.println(carbonData);
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
             connection.disconnect();
         }
+        return carbonData;
     }
 }

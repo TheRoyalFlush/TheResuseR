@@ -16,9 +16,13 @@
         android:usesCleartextTraffic="true"
         tools:ignore="GoogleAppIndexingWarning">
         <activity
+            android:name=".PostDataReview"
+            android:label="@string/title_activity_post_data_review"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
+        <activity
             android:name=".ItemClaim"
             android:label="@string/title_activity_item_claim"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".ItemDetails"
             android:label="@string/title_activity_item_details"

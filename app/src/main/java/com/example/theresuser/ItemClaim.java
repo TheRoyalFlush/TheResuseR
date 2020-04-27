@@ -2,6 +2,7 @@ package com.example.theresuser;
 
 import android.content.Intent;
 import android.location.Location;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 
@@ -21,27 +22,36 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class ItemClaim extends AppCompatActivity {
-    String data;
+    String data,carbonIntensity,latitude,longitude,userLatitude,userLongitude;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_item_claim);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        Intent intent = getIntent();
-        data = intent.getStringExtra("ItemDetails");
+        data = getApplicationContext().getSharedPreferences("claim_data",MODE_PRIVATE).getString("item_content",null);
+        carbonIntensity = getApplicationContext().getSharedPreferences("claim_data",MODE_PRIVATE).getString("carbon_intensity",null);
+        userLatitude = getApplicationContext().getSharedPreferences("claim_data",MODE_PRIVATE).getString("user_latitude",null);
+        userLongitude = getApplicationContext().getSharedPreferences("claim_data",MODE_PRIVATE).getString("user_longitude",null);
         TextView textView = (TextView)findViewById(R.id.tv);
         try {
             JSONObject jsonObject = new JSONObject(data);
+            latitude = jsonObject.getString("latitude");
+            longitude = jsonObject.getString("longitude");
             textView.setText(jsonObject.getString("item_name")+"\n"+jsonObject.getString("type_name")+
-                    "\n"+jsonObject.getString("year_range"));
+                    "\n"+jsonObject.getString("year_range")+"\n"+carbonIntensity);
 
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
 
+    }
+
+    public void Navigate(View view){
+        String uri = "http://maps.google.com/maps?saddr=" + userLatitude + "," + userLongitude + "&daddr=" + latitude + "," + longitude;
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
+        startActivity(intent);
     }
 
     public void Claim(View view){
@@ -69,28 +79,9 @@ public class ItemClaim extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(String s) {
-            CarbonIntensityAsyncTask carbonIntensityAsyncTask = new CarbonIntensityAsyncTask();
-            carbonIntensityAsyncTask.execute();
+
         }
     }
 
-    public class CarbonIntensityAsyncTask extends AsyncTask<String,Void,String>{
-
-        @Override
-        protected String doInBackground(String... strings) {
-            String name = "";
-            try {
-                JSONObject idJson = new JSONObject(data);
-                name = idJson.getString("item_name");
-
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            String itemName = "{\"item_name\":\""+name+"\"}";
-            System.out.println(itemName);
-            AsyncTaskData.carbonIntensity(itemName);
-            return null;
-        }
-    }
 
 }
