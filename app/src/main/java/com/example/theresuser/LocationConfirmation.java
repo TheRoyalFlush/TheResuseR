@@ -52,7 +52,6 @@ public class LocationConfirmation extends FragmentActivity implements OnMapReady
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_location_confirmation);
-
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
@@ -65,6 +64,7 @@ public class LocationConfirmation extends FragmentActivity implements OnMapReady
     public void permissionHandller(){
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
             permission = true;
+            updateLocationUI();
         }
         else{
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION},PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
@@ -75,12 +75,15 @@ public class LocationConfirmation extends FragmentActivity implements OnMapReady
     public void onRequestPermissionsResult(int requestCode,
                                            @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
+
         permission = false;
         switch (requestCode) {
             case PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION: {
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     permission = true;
+
+                    updateLocationUI();
                 }
             }
         }
@@ -93,9 +96,12 @@ public class LocationConfirmation extends FragmentActivity implements OnMapReady
         }
         try {
             if (permission) {
+
                 mMap.setMyLocationEnabled(true);
                 mMap.getUiSettings().setMyLocationButtonEnabled(true);
+                getDeviceLocation();
             } else {
+
                 mMap.setMyLocationEnabled(false);
                 mMap.getUiSettings().setMyLocationButtonEnabled(false);
                 lastLocation = null;
@@ -108,6 +114,7 @@ public class LocationConfirmation extends FragmentActivity implements OnMapReady
 
     //Getting the location of the user
     private void getDeviceLocation() {
+
         try {
             if (permission) {
                 Task locationResult = fusedLocationProviderClient.getLastLocation();
@@ -117,13 +124,15 @@ public class LocationConfirmation extends FragmentActivity implements OnMapReady
                         if (task.isSuccessful()) {
                             lastLocation = (Location) task.getResult();
                             if (lastLocation != null) {
+
                                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
                                         new LatLng(lastLocation.getLatitude(),
                                                 lastLocation.getLongitude()), 20));
                                 mMap.addMarker(new MarkerOptions().position(new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude())));
                             }
                             else{
-                                Toast.makeText(getApplication(),"Check you Location Settings",Toast.LENGTH_LONG).show();
+                                updateLocationUI();
+                                //Toast.makeText(getApplication(),"Check you Location Settings",Toast.LENGTH_LONG).show();
                             }
                             } else {
                             //mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mDefaultLocation, 20));
@@ -142,7 +151,7 @@ public class LocationConfirmation extends FragmentActivity implements OnMapReady
         mMap = googleMap;
 
         updateLocationUI();
-        getDeviceLocation();
+        //getDeviceLocation();
     }
     //Generating a unique id for the item to be posted
     public void SendData(View view){

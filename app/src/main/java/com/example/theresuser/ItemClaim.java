@@ -32,6 +32,7 @@ public class ItemClaim extends AppCompatActivity {
         setContentView(R.layout.activity_item_claim);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle("Item Details");
         //Getting all the saved data of the item that the user has selcted
         data = getApplicationContext().getSharedPreferences("claim_data",MODE_PRIVATE).getString("item_content",null);
         carbonIntensity = getApplicationContext().getSharedPreferences("claim_data",MODE_PRIVATE).getString("carbon_intensity",null);

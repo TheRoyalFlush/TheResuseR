@@ -43,6 +43,7 @@ public class DonateStuff extends Fragment {
             savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_donate_stuff, container, false);
 
+        getActivity().setTitle("Donate Items");
         itemSpinner =(Spinner) view.findViewById(R.id.itemSpinner);
         colorSpinner =(Spinner) view.findViewById(R.id.colorSpinner);
         typeSpinner =(Spinner) view.findViewById(R.id.typeSpinner);

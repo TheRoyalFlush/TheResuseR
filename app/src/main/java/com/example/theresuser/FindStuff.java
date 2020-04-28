@@ -1,16 +1,21 @@
 package com.example.theresuser;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentSender;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.provider.ContactsContract;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -23,9 +28,14 @@ import android.widget.ArrayAdapter;
 import android.widget.SearchView;
 
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
+import com.google.android.gms.common.api.ResolvableApiException;
 import com.google.android.gms.common.api.internal.BackgroundDetector;
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.LocationSettingsRequest;
+import com.google.android.gms.location.LocationSettingsResponse;
+import com.google.android.gms.location.SettingsClient;
 import com.google.android.gms.location.places.GeoDataClient;
 import com.google.android.gms.location.places.PlaceDetectionClient;
 import com.google.android.gms.location.places.Places;
@@ -37,6 +47,8 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 
 import org.json.JSONArray;
@@ -49,6 +61,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.Executor;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -66,7 +79,7 @@ public class FindStuff extends Fragment implements OnMapReadyCallback {
     boolean permission;
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 101;
     JSONArray markerArray;
-    boolean queryFlag = false;
+    boolean queryFlag;
     String queryString = "";
     List<String> nameList = new ArrayList<>();
 
@@ -76,7 +89,7 @@ public class FindStuff extends Fragment implements OnMapReadyCallback {
             savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_find_stuff, container, false);
         setHasOptionsMenu(true);
-
+        getActivity().setTitle("Find Items");
         MapFragment mapFragment = (MapFragment)getChildFragmentManager().findFragmentById(R.id.mapView);
         mapFragment.getMapAsync(this);
         geoDataClient = Places.getGeoDataClient(getActivity(),null);
@@ -93,6 +106,13 @@ public class FindStuff extends Fragment implements OnMapReadyCallback {
                 return false;
             }
         });
+        if (getActivity().getSharedPreferences("populate_maps",Context.MODE_PRIVATE) != null) {
+            if (getActivity().getSharedPreferences("populate_maps", Context.MODE_PRIVATE).getInt("launch", 101) == 1) {
+                PopulateMap populateMap = new PopulateMap();
+                populateMap.execute();
+            }
+        }
+
         return view;
     }
 
@@ -109,6 +129,7 @@ public class FindStuff extends Fragment implements OnMapReadyCallback {
                     Toast.makeText(getActivity(),"No Items Found",Toast.LENGTH_LONG).show();
                     return false;
                 }
+                Toast.makeText(getActivity(),"Zoom out to look for items.",Toast.LENGTH_LONG).show();
                 queryFlag = true;
                 queryString = query;
                 PopulateMap populateMap = new PopulateMap();
@@ -124,14 +145,13 @@ public class FindStuff extends Fragment implements OnMapReadyCallback {
         super.onCreateOptionsMenu(menu, inflater);
     }
     //Calling the map to initialize when the activity is launched
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        System.out.println("mapready");
         mMap = googleMap;
         updateLocationUI();
-        getDeviceLocation();
-        PopulateMap populateMap = new PopulateMap();
-        populateMap.execute();
+        //getDeviceLocation();
+
         //Setting the marker for the users location on the map
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
@@ -158,7 +178,10 @@ public class FindStuff extends Fragment implements OnMapReadyCallback {
     public class PopulateMap extends AsyncTask<String,Void,String>{
         @Override
         protected String doInBackground(String... strings) {
-            System.out.println("populate maps");
+            SharedPreferences sharedPreferences = getActivity().getSharedPreferences("populate_maps",Context.MODE_PRIVATE);
+            SharedPreferences.Editor edit = sharedPreferences.edit();
+            edit.putInt("launch",1);
+            edit.apply();
             String mapData = AsyncTaskData.getMapData();
             return mapData;
         }
@@ -176,7 +199,8 @@ public class FindStuff extends Fragment implements OnMapReadyCallback {
     public void populateMap(String arrayResult,int resultCode){
         if (mMap !=null){
             mMap.clear();
-            getDeviceLocation();
+
+            //getDeviceLocation();
         }
 
         try {
@@ -223,40 +247,55 @@ public class FindStuff extends Fragment implements OnMapReadyCallback {
         }
     }
     //Handelling permissions for the application to get the users location services
+    @RequiresApi(api = Build.VERSION_CODES.M)
     public void permissionHandller(){
         if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
             permission = true;
+            updateLocationUI();
         }
         else{
-            ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION},PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
+            requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION},PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
+
         }
     }
     //Handling the permission request for the user
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     public void onRequestPermissionsResult(int requestCode,
                                            @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
+
         permission = false;
         switch (requestCode) {
             case PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION: {
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     permission = true;
+                    //updateLocationUI();
+                    //getDeviceLocation();
                 }
             }
         }
         updateLocationUI();
     }
     //Updating the location of the user
-    private void updateLocationUI() {
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    public void updateLocationUI() {
+
         if (mMap == null) {
+
             return;
         }
         try {
             if (permission) {
+
                 mMap.setMyLocationEnabled(true);
                 mMap.getUiSettings().setMyLocationButtonEnabled(true);
+                getDeviceLocation();
+                PopulateMap populateMap = new PopulateMap();
+                populateMap.execute();
             } else {
+
                 mMap.setMyLocationEnabled(false);
                 mMap.getUiSettings().setMyLocationButtonEnabled(false);
                 lastLocation = null;
@@ -271,21 +310,30 @@ public class FindStuff extends Fragment implements OnMapReadyCallback {
     private void getDeviceLocation() {
         try {
             if (permission) {
+
                 Task locationResult = fusedLocationProviderClient.getLastLocation();
                 locationResult.addOnCompleteListener(getActivity(), new OnCompleteListener() {
+                    @RequiresApi(api = Build.VERSION_CODES.M)
                     @Override
                     public void onComplete(@NonNull Task task) {
                         if (task.isSuccessful()) {
                             lastLocation = (Location) task.getResult();
-                            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
-                                    new LatLng(lastLocation.getLatitude(),
-                                            lastLocation.getLongitude()), 10));
-                            mMap.addMarker(new MarkerOptions().position(new LatLng(lastLocation.getLatitude(),lastLocation.getLongitude())).title("Your Location").draggable(true)).showInfoWindow();
-                            SharedPreferences sharedPreferences = getActivity().getSharedPreferences("claim_data", Context.MODE_PRIVATE);
-                            SharedPreferences.Editor editor =sharedPreferences.edit();
-                            editor.putString("user_latitude", String.valueOf(lastLocation.getLatitude()));
-                            editor.putString("user_longitude", String.valueOf(lastLocation.getLongitude()));
-                            editor.apply();
+                            if (lastLocation != null) {
+
+                                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
+                                        new LatLng(lastLocation.getLatitude(),
+                                                lastLocation.getLongitude()), 20));
+                                mMap.addMarker(new MarkerOptions().position(new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude())).title("Your Location").draggable(true)).showInfoWindow();
+                                SharedPreferences sharedPreferences = getActivity().getSharedPreferences("claim_data", Context.MODE_PRIVATE);
+                                SharedPreferences.Editor editor = sharedPreferences.edit();
+                                editor.putString("user_latitude", String.valueOf(lastLocation.getLatitude()));
+                                editor.putString("user_longitude", String.valueOf(lastLocation.getLongitude()));
+                                editor.apply();
+                            }
+                            else {
+                                updateLocationUI();
+                                //Toast.makeText(getActivity(),"Check you Location Settings",Toast.LENGTH_LONG).show();
+                            }
                         } else {
                             //mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mDefaultLocation, 20));
                             mMap.getUiSettings().setMyLocationButtonEnabled(false);

@@ -1,5 +1,6 @@
 package com.example.theresuser;
 
+import android.app.FragmentManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -30,13 +31,16 @@ import java.util.Locale;
 public class ItemDetails extends AppCompatActivity {
     JSONArray markerArray;
     String name;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_item_details);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle("Items Available on Location");
         ListView listView = (ListView)findViewById(R.id.itemsListView);
+
 
         Intent intent = getIntent();
         ArrayList<String> s = intent.getStringArrayListExtra("Item");
@@ -59,6 +63,8 @@ public class ItemDetails extends AppCompatActivity {
                 e.printStackTrace();
             }
         }
+
+
         //Search feature for the user to search for stuff
         final ArrayAdapter<String> itemListAdapter = new ArrayAdapter<String>(this,R.layout.list_item_text, itemList);
         itemListAdapter.setDropDownViewResource(android.R.layout.simple_expandable_list_item_1);

@@ -28,6 +28,7 @@ public class PostDataReview extends AppCompatActivity {
         setContentView(R.layout.activity_post_data_review);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle("Review Item Details");
         SharedPreferences sharedPreferences = getApplication().getSharedPreferences("post_data", Context.MODE_PRIVATE);
         if (sharedPreferences != null){
             //Getting the data saved in the shared preference
@@ -77,10 +78,17 @@ public class PostDataReview extends AppCompatActivity {
         protected void onPostExecute(String s) {
             AlertDialog.Builder builder =new AlertDialog.Builder(PostDataReview.this);
             builder.setTitle("Post Created").setMessage("Your post has been uploaded and can be seen by people nearby.")
-                   .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                   .setNegativeButton("OK", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     Intent intent = new Intent(getApplicationContext(),MainActivity.class);
+                    startActivity(intent);
+                }
+            }).setPositiveButton("Post New Item", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    Intent intent = new Intent(getApplicationContext(),MainActivity.class);
+                    intent.putExtra("postNewItem","newPost");
                     startActivity(intent);
                 }
             });
