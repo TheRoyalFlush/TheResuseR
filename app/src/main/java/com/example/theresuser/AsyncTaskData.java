@@ -304,4 +304,37 @@ public class AsyncTaskData {
         }
         return userData;
     }
+
+    public static String topThree(String topThree) {
+
+        URL url = null;
+        HttpURLConnection connection = null;
+        final String methodPath="top_three";
+        String topThreeData = "";
+        try {
+            url = new URL(BASE_URL + methodPath);
+            System.out.println(url);
+            connection = (HttpURLConnection) url.openConnection();
+            connection.setReadTimeout(10000);
+            connection.setConnectTimeout(15000);
+            connection.setRequestMethod("POST");
+            connection.setDoOutput(true);
+            connection.setFixedLengthStreamingMode(topThree.getBytes().length);
+            connection.setRequestProperty("Content-Type", "application/json");
+            PrintWriter out = new PrintWriter(connection.getOutputStream());
+            out.print(topThree);
+            out.close();
+            Log.i("error",connection.getResponseMessage());
+            Scanner inStream = new Scanner(connection.getInputStream());
+            while (inStream.hasNextLine()) {
+                topThreeData += inStream.nextLine();
+            }
+            System.out.println(topThreeData);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            connection.disconnect();
+        }
+        return topThreeData;
+    }
 }

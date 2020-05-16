@@ -41,5 +41,5 @@ dependencies {
 
     implementation "com.github.PhilJay:MPAndroidChart:3.0.2"
 
-    implementation'com.github.Pygmalion69:Gauge:1.5.2'
+    implementation 'com.github.Pygmalion69:Gauge:1.5.2'
 }
