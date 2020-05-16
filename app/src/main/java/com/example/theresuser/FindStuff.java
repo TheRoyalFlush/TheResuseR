@@ -1,21 +1,16 @@
 package com.example.theresuser;
 
 import android.Manifest;
-import android.app.Activity;
-import android.app.FragmentTransaction;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentSender;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
-import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.app.Fragment;
-import android.provider.ContactsContract;
-import android.provider.Settings;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -24,50 +19,46 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ListView;
+import android.widget.ScrollView;
 import android.widget.SearchView;
 
-import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
-import com.google.android.gms.common.api.ResolvableApiException;
-import com.google.android.gms.common.api.internal.BackgroundDetector;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.location.LocationSettingsRequest;
-import com.google.android.gms.location.LocationSettingsResponse;
-import com.google.android.gms.location.SettingsClient;
 import com.google.android.gms.location.places.GeoDataClient;
 import com.google.android.gms.location.places.PlaceDetectionClient;
 import com.google.android.gms.location.places.Places;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 
-import android.app.FragmentManager;
 import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.Executor;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
-import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
+
 //Class to get the users location and populate the map with all the items that are available
 public class FindStuff extends Fragment implements OnMapReadyCallback {
     View view;
@@ -82,6 +73,11 @@ public class FindStuff extends Fragment implements OnMapReadyCallback {
     boolean queryFlag;
     String queryString = "";
     List<String> nameList = new ArrayList<>();
+    ListView itemListView;
+    List<String[]> currentItemsList;
+    ListViewCustomAdapter adapter;
+    AlertDialog alertDialog;
+    List<Integer> postId;
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     @Override
@@ -89,61 +85,66 @@ public class FindStuff extends Fragment implements OnMapReadyCallback {
             savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_find_stuff, container, false);
         setHasOptionsMenu(true);
-        getActivity().setTitle("Find Items");
-        MapFragment mapFragment = (MapFragment)getChildFragmentManager().findFragmentById(R.id.mapView);
+
+        final SupportMapFragment mapFragment = (SupportMapFragment)getChildFragmentManager().findFragmentById(R.id.mapView);
         mapFragment.getMapAsync(this);
+
         geoDataClient = Places.getGeoDataClient(getActivity(),null);
         placeDetectionClient = Places.getPlaceDetectionClient(getActivity(),null);
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getActivity());
 
-        //Sending the user to the landing page when back button is pressed
-        view.setOnKeyListener(new View.OnKeyListener() {
+        itemListView = new ListView(getActivity());
+        currentItemsList = new ArrayList<String[]>();
+
+        adapter = new ListViewCustomAdapter(getActivity(),R.layout.custom_list_view, (ArrayList<String[]>) currentItemsList);
+        itemListView.setAdapter(adapter);
+
+        //final NavController navController = Navigation.findNavController(view);
+
+        final AlertDialog.Builder builder =new AlertDialog.Builder(getActivity());
+        builder.setTitle("Items").setMessage("Please select an item.").setView(itemListView)
+                .setPositiveButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                });
+        alertDialog = builder.create();
+
+        itemListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public boolean onKey(View v, int keyCode, KeyEvent event) {
-                if (keyCode == KeyEvent.KEYCODE_BACK){
-                    return true;
+            public void onItemClick(AdapterView<?> parent, View viw, int position, long id) {
+                GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(getActivity());
+                if (account == null) {
+                    alertDialog.cancel();
+                    final NavController navController = Navigation.findNavController(view);
+                    navController.navigate(R.id.action_findStuff_to_login);
+                    return;
+                } else {
+                if (postId != null && markerArray != null) {
+                    for (int i = 0; i <= markerArray.length() - 1; i++) {
+                        try {
+                            if (Integer.valueOf(markerArray.getJSONObject(i).getString("post_id")) == postId.get(position)) {
+                                SharedPreferences sharedPreferences = getActivity().getSharedPreferences("claim_data", Context.MODE_PRIVATE);
+                                SharedPreferences.Editor editor = sharedPreferences.edit();
+                                editor.putString("item_content", String.valueOf(markerArray.getJSONObject(i)));
+                                editor.apply();
+                                alertDialog.cancel();
+                                final NavController navController = Navigation.findNavController(view);
+                                navController.navigate(R.id.action_findStuff_to_itemClaim);
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
                 }
-                return false;
+            }
             }
         });
-        if (getActivity().getSharedPreferences("populate_maps",Context.MODE_PRIVATE) != null) {
-            if (getActivity().getSharedPreferences("populate_maps", Context.MODE_PRIVATE).getInt("launch", 101) == 1) {
-                PopulateMap populateMap = new PopulateMap();
-                populateMap.execute();
-            }
-        }
 
         return view;
     }
 
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.search_menu,menu);
-        MenuItem menuItem = menu.findItem(R.id.searchMenu);
-        final SearchView searchView = (SearchView)menuItem.getActionView();
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                if (!nameList.contains(query)){
-                    Toast.makeText(getActivity(),"No Items Found",Toast.LENGTH_LONG).show();
-                    return false;
-                }
-                Toast.makeText(getActivity(),"Zoom out to look for items.",Toast.LENGTH_LONG).show();
-                queryFlag = true;
-                queryString = query;
-                PopulateMap populateMap = new PopulateMap();
-                populateMap.execute();
-                return false;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                return false;
-            }
-        });
-        super.onCreateOptionsMenu(menu, inflater);
-    }
     //Calling the map to initialize when the activity is launched
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
@@ -156,16 +157,39 @@ public class FindStuff extends Fragment implements OnMapReadyCallback {
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
+                List<String> tagList = new ArrayList<>();
                 if(!marker.getTitle().equals("Your Location")) {
                     if (markerArray != null) {
+
+                        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("Marker_Data",Context.MODE_PRIVATE);
+                        SharedPreferences.Editor editor = sharedPreferences.edit();
+
+                        ArrayList<String> mArray = (ArrayList<String>) marker.getTag();
+                        Set<String> set = new HashSet<String>(mArray);
+
+                        editor.putStringSet("Item", set);
+                        editor.putString("markerArray",String.valueOf(markerArray));
+                        editor.apply();
+                        postId = new ArrayList<>();
+                        currentItemsList.clear();
                         for (int i = 0; i <= markerArray.length() - 1; i++) {
-                            Intent intent = new Intent(getActivity(), ItemDetails.class);
-                            intent.putExtra("Item", (ArrayList<String>) marker.getTag());
-                            if (markerArray != null) {
-                                intent.putExtra("markerArray", String.valueOf(markerArray));
+
+                            try {
+                                if (mArray.contains(markerArray.getJSONObject(i).getString("post_id"))) {
+                                    System.out.println("yes");
+                                    postId.add(Integer.valueOf(markerArray.getJSONObject(i).getString("post_id")));
+                                    currentItemsList.add(new String[]{markerArray.getJSONObject(i).getString("item_name"),
+                                            markerArray.getJSONObject(i).getString("color_name"),
+                                            markerArray.getJSONObject(i).getString("year_range")});
+
+                                }
+                            } catch (JSONException e) {
+                                e.printStackTrace();
                             }
-                            startActivity(intent);
                         }
+
+                        adapter.notifyDataSetChanged();
+                        alertDialog.show();
                     }
                 }
                 return false;
@@ -174,110 +198,6 @@ public class FindStuff extends Fragment implements OnMapReadyCallback {
 
     }
 
-    //Getting the maps data with the markers and the items posted
-    public class PopulateMap extends AsyncTask<String,Void,String>{
-        @Override
-        protected String doInBackground(String... strings) {
-            SharedPreferences sharedPreferences = getActivity().getSharedPreferences("populate_maps",Context.MODE_PRIVATE);
-            SharedPreferences.Editor edit = sharedPreferences.edit();
-            edit.putInt("launch",1);
-            edit.apply();
-            String mapData = AsyncTaskData.getMapData();
-            return mapData;
-        }
-
-
-        @Override
-        protected void onPostExecute(String s) {
-            populateMap(s,0);
-            queryFlag = false;
-
-
-        }
-    }
-    //Poppulating the map with the markerd of the items posted
-    public void populateMap(String arrayResult,int resultCode){
-        if (mMap !=null){
-            mMap.clear();
-
-            //getDeviceLocation();
-        }
-
-        try {
-            Set<LatLng> markerSet = new HashSet<>();
-            JSONArray mapArray = new JSONArray(arrayResult);
-            markerArray = mapArray;
-            for(int i = 0; i<= mapArray.length() - 1;i++) {
-                if (queryFlag) {
-                    if (mapArray.getJSONObject(i).getString("item_name").toLowerCase().equals(queryString.toLowerCase())) {
-                        markerSet.add(new LatLng(Double.valueOf(mapArray.getJSONObject(i).getString("latitude")), Double.valueOf(mapArray.getJSONObject(i).getString("longitude"))));
-                    }
-                }
-                else{
-                    markerSet.add(new LatLng(Double.valueOf(mapArray.getJSONObject(i).getString("latitude")), Double.valueOf(mapArray.getJSONObject(i).getString("longitude"))));
-                    nameList.add(mapArray.getJSONObject(i).getString("item_name"));
-                }
-            }
-
-            List<LatLng> markerList = new ArrayList<>(markerSet);
-            for (int i = 0;i <= markerList.size() -1;i++){
-                List<String> markerTagList = new ArrayList<>();
-                String postName = "";
-                for (int j = 0; j <= mapArray.length() - 1;j++) {
-                    if (queryFlag) {
-                        if (mapArray.getJSONObject(i).getString("item_name").toLowerCase().equals(queryString.toLowerCase())) {
-                            if (markerList.get(i).equals(new LatLng(Double.valueOf(mapArray.getJSONObject(j).getString("latitude")), Double.valueOf(mapArray.getJSONObject(j).getString("longitude"))))) {
-                                postName = postName + mapArray.getJSONObject(j).getString("item_name").toUpperCase() + "\n";
-                                markerTagList.add(mapArray.getJSONObject(j).getString("post_id"));
-                            }
-                        }
-                    }
-                    else{
-                        if (markerList.get(i).equals(new LatLng(Double.valueOf(mapArray.getJSONObject(j).getString("latitude")), Double.valueOf(mapArray.getJSONObject(j).getString("longitude"))))) {
-                            postName = postName + mapArray.getJSONObject(j).getString("item_name").toUpperCase() + "\n";
-                            markerTagList.add(mapArray.getJSONObject(j).getString("post_id"));
-                        }
-                    }
-                }
-                mMap.addMarker(new MarkerOptions().position(markerList.get(i)).title("Item").snippet(postName)).setTag(markerTagList);
-            }
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-    }
-    //Handelling permissions for the application to get the users location services
-    @RequiresApi(api = Build.VERSION_CODES.M)
-    public void permissionHandller(){
-        if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
-            permission = true;
-            updateLocationUI();
-        }
-        else{
-            requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION},PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
-
-        }
-    }
-    //Handling the permission request for the user
-    @RequiresApi(api = Build.VERSION_CODES.M)
-    @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           @NonNull String[] permissions,
-                                           @NonNull int[] grantResults) {
-
-        permission = false;
-        switch (requestCode) {
-            case PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION: {
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    permission = true;
-                    //updateLocationUI();
-                    //getDeviceLocation();
-                }
-            }
-        }
-        updateLocationUI();
-    }
     //Updating the location of the user
     @RequiresApi(api = Build.VERSION_CODES.M)
     public void updateLocationUI() {
@@ -304,6 +224,40 @@ public class FindStuff extends Fragment implements OnMapReadyCallback {
         } catch (SecurityException e)  {
             Log.e("Exception: %s", e.getMessage());
         }
+    }
+
+    //Handelling permissions for the application to get the users location services
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    public void permissionHandller(){
+        if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
+            permission = true;
+            updateLocationUI();
+        }
+        else{
+            requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION},PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
+
+        }
+    }
+
+    //Handling the permission request for the user
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+
+        permission = false;
+        switch (requestCode) {
+            case PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION: {
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    permission = true;
+                    //updateLocationUI();
+                    //getDeviceLocation();
+                }
+            }
+        }
+        updateLocationUI();
     }
 
     //Getting the location of the user
@@ -345,4 +299,115 @@ public class FindStuff extends Fragment implements OnMapReadyCallback {
             Log.e("Exception: %s", e.getMessage());
         }
     }
+
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.search_menu,menu);
+        MenuItem menuItem = menu.findItem(R.id.searchMenu);
+        final SearchView searchView = (SearchView)menuItem.getActionView();
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                if (!nameList.contains(query)){
+                    System.out.println("query no");
+                    Toast.makeText(getActivity(),"No Items Found",Toast.LENGTH_LONG).show();
+                    return false;
+                }
+                System.out.println("query yes");
+                Toast.makeText(getActivity(),"Zoom out to look for items.",Toast.LENGTH_LONG).show();
+                queryFlag = true;
+                queryString = query;
+                PopulateMap populateMap = new PopulateMap();
+                populateMap.execute();
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                System.out.println("text change");
+                return false;
+            }
+        });
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+
+    //Getting the maps data with the markers and the items posted
+    public class PopulateMap extends AsyncTask<String,Void,String>{
+        @Override
+        protected String doInBackground(String... strings) {
+            //SharedPreferences sharedPreferences = getActivity().getSharedPreferences("populate_maps",Context.MODE_PRIVATE);
+            //SharedPreferences.Editor edit = sharedPreferences.edit();
+            //edit.putInt("launch",1);
+            //edit.apply();
+            String mapData = AsyncTaskData.getMapData();
+            return mapData;
+        }
+
+
+        @Override
+        protected void onPostExecute(String s) {
+            populateMap(s,0);
+            queryFlag = false;
+        }
+    }
+    //Poppulating the map with the markerd of the items posted
+    public void populateMap(String arrayResult,int resultCode){
+        if (mMap !=null){
+            mMap.clear();
+
+            //getDeviceLocation();
+        }
+
+        try {
+            Set<LatLng> markerSet = new HashSet<>();
+            JSONArray mapArray = new JSONArray(arrayResult);
+            markerArray = mapArray;
+            for(int i = 0; i<= mapArray.length() - 1;i++) {
+                if (queryFlag) {
+                    if (mapArray.getJSONObject(i).getString("item_name").toLowerCase().equals(queryString.toLowerCase())) {
+                        System.out.println("query populate");
+                        markerSet.add(new LatLng(Double.valueOf(mapArray.getJSONObject(i).getString("latitude")), Double.valueOf(mapArray.getJSONObject(i).getString("longitude"))));
+                    }
+                }
+                else{
+                    markerSet.add(new LatLng(Double.valueOf(mapArray.getJSONObject(i).getString("latitude")), Double.valueOf(mapArray.getJSONObject(i).getString("longitude"))));
+                    nameList.add(mapArray.getJSONObject(i).getString("item_name").toLowerCase());
+                }
+            }
+
+            List<LatLng> markerList = new ArrayList<>(markerSet);
+            for (int i = 0;i <= markerList.size() -1;i++){
+                List<String> markerTagList = new ArrayList<>();
+                String postName = "";
+                for (int j = 0; j <= mapArray.length() - 1;j++) {
+                    if (queryFlag) {
+                        if (mapArray.getJSONObject(j).getString("item_name").toLowerCase().equals(queryString.toLowerCase())) {
+                            System.out.println("query pupulate map");
+                            if (markerList.get(i).equals(new LatLng(Double.valueOf(mapArray.getJSONObject(j).getString("latitude")), Double.valueOf(mapArray.getJSONObject(j).getString("longitude"))))) {
+                                postName = postName + mapArray.getJSONObject(j).getString("item_name").toUpperCase() + "\n";
+                                markerTagList.add(mapArray.getJSONObject(j).getString("post_id"));
+                            }
+                        }
+                    }
+                    else{
+                        if (markerList.get(i).equals(new LatLng(Double.valueOf(mapArray.getJSONObject(j).getString("latitude")), Double.valueOf(mapArray.getJSONObject(j).getString("longitude"))))) {
+                            postName = postName + mapArray.getJSONObject(j).getString("item_name").toUpperCase() + "\n";
+                            markerTagList.add(mapArray.getJSONObject(j).getString("post_id"));
+                        }
+                    }
+                }
+                mMap.addMarker(new MarkerOptions().position(markerList.get(i)).title("Item").snippet(postName)).setTag(markerTagList);
+            }
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+
+
+
 }

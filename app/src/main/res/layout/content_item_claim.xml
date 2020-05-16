@@ -123,14 +123,13 @@
         android:id="@+id/claim"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:onClick="Claim"
+        android:background="#009688"
         android:text="Claim Item"
+        android:textColor="#FFFFFF"
         app:layout_constraintBottom_toTopOf="@+id/route"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        android:background="#009688"
-        android:textColor="#FFFFFF"/>
+        app:layout_constraintStart_toStartOf="parent" />
 
     <Button
         android:id="@+id/route"

@@ -15,12 +15,11 @@
         tools:context=".LocationConfirmation" />
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/sendData"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/map"
         android:layout_alignParentBottom="true"
-        android:onClick="SendData"
         android:text="SELECT LOCATION"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

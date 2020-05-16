@@ -5,6 +5,8 @@ import android.util.Log;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import org.json.JSONArray;
+
 import java.io.PrintWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -43,25 +45,25 @@ public class AsyncTaskData {
     }
 
     //Posting the item online to the database
-    public static void postItem(Item item){
+    public static void postItem(String finalPostArray){
         URL url = null;
         HttpURLConnection connection = null;
-        final String methodPath="post_items";
+        final String methodPath="post_items_list";
         try {
             url = new URL(BASE_URL + methodPath);
             System.out.println(url);
-            Gson gson = new GsonBuilder().create();
-            String stringJson = gson.toJson(item);
-            System.out.println(stringJson);
+            //Gson gson = new GsonBuilder().create();
+            //String stringJson = gson.toJson(finalPostArray);
+            System.out.println(finalPostArray);
             connection = (HttpURLConnection) url.openConnection();
             connection.setReadTimeout(10000);
             connection.setConnectTimeout(15000);
             connection.setRequestMethod("POST");
             connection.setDoOutput(true);
-            connection.setFixedLengthStreamingMode(stringJson.getBytes().length);
+            connection.setFixedLengthStreamingMode(finalPostArray.getBytes().length);
             connection.setRequestProperty("Content-Type", "application/json");
             PrintWriter out = new PrintWriter(connection.getOutputStream());
-            out.print(stringJson);
+            out.print(finalPostArray);
             out.close();
             Log.i("error",new Integer(connection.getResponseCode()).toString());
         } catch (Exception e) {
@@ -184,5 +186,122 @@ public class AsyncTaskData {
             connection.disconnect();
         }
         return carbonData;
+    }
+
+    public static String RecordId(){
+        URL url = null;
+        StringBuffer sb = null;
+        HttpURLConnection connection = null;
+        String recordData = "";
+        try {
+            url = new URL(BASE_URL + "allactivity");
+            connection = (HttpURLConnection) url.openConnection();
+            connection.setReadTimeout(10000);
+            connection.setConnectTimeout(15000);
+            connection.setRequestMethod("GET");
+            connection.setRequestProperty("Content-Type", "application/json");
+            connection.setRequestProperty("Accept", "application/json");
+            Log.i("error",new Integer(connection.getResponseCode()).toString());
+            Scanner inStream = new Scanner(connection.getInputStream());
+            Log.i("error",new Integer(connection.getResponseCode()).toString());
+            while (inStream.hasNextLine()) {
+                recordData += inStream.nextLine();
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            connection  .disconnect();
+        }
+        System.out.println(recordData);
+        return recordData;
+    }
+
+    public static void postActivity(String finalPostArray){
+        URL url = null;
+        HttpURLConnection connection = null;
+        final String methodPath="post_useractivity";
+        try {
+            url = new URL(BASE_URL + methodPath);
+            System.out.println(url);
+            //Gson gson = new GsonBuilder().create();
+            //String stringJson = gson.toJson(finalPostArray);
+            System.out.println(finalPostArray);
+            connection = (HttpURLConnection) url.openConnection();
+            connection.setReadTimeout(10000);
+            connection.setConnectTimeout(15000);
+            connection.setRequestMethod("POST");
+            connection.setDoOutput(true);
+            connection.setFixedLengthStreamingMode(finalPostArray.getBytes().length);
+            connection.setRequestProperty("Content-Type", "application/json");
+            PrintWriter out = new PrintWriter(connection.getOutputStream());
+            out.print(finalPostArray);
+            out.close();
+            Log.i("error",new Integer(connection.getResponseCode()).toString());
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            connection.disconnect();
+        }
+    }
+
+    public static void registerUser(String finalPostArray){
+        URL url = null;
+        HttpURLConnection connection = null;
+        final String methodPath="post_user";
+        try {
+            url = new URL(BASE_URL + methodPath);
+            System.out.println(url);
+            //Gson gson = new GsonBuilder().create();
+            //String stringJson = gson.toJson(finalPostArray);
+            System.out.println(finalPostArray);
+            connection = (HttpURLConnection) url.openConnection();
+            connection.setReadTimeout(10000);
+            connection.setConnectTimeout(15000);
+            connection.setRequestMethod("POST");
+            connection.setDoOutput(true);
+            connection.setFixedLengthStreamingMode(finalPostArray.getBytes().length);
+            connection.setRequestProperty("Content-Type", "application/json");
+            PrintWriter out = new PrintWriter(connection.getOutputStream());
+            out.print(finalPostArray);
+            out.close();
+            Log.i("error",new Integer(connection.getResponseCode()).toString());
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            connection.disconnect();
+        }
+    }
+
+    public static String userActivity(String userName) {
+        URL url = null;
+        HttpURLConnection connection = null;
+        final String methodPath="postedactivities";
+        String userData = "";
+        try {
+            url = new URL(BASE_URL + methodPath);
+            System.out.println(url);
+            connection = (HttpURLConnection) url.openConnection();
+            connection.setReadTimeout(10000);
+            connection.setConnectTimeout(15000);
+            connection.setRequestMethod("POST");
+            connection.setDoOutput(true);
+            connection.setFixedLengthStreamingMode(userName.getBytes().length);
+            connection.setRequestProperty("Content-Type", "application/json");
+            PrintWriter out = new PrintWriter(connection.getOutputStream());
+            out.print(userName);
+            out.close();
+            Log.i("error",connection.getResponseMessage());
+            Scanner inStream = new Scanner(connection.getInputStream());
+            while (inStream.hasNextLine()) {
+                userData += inStream.nextLine();
+            }
+            System.out.println(userData);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            connection.disconnect();
+        }
+        return userData;
     }
 }

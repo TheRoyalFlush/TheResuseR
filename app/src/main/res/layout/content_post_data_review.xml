@@ -9,12 +9,11 @@
     tools:showIn="@layout/activity_post_data_review">
 
     <Button
-        android:id="@+id/button2"
+        android:id="@+id/postData"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="331dp"
         android:background="#009688"
-        android:onClick="PostData"
         android:text="Post Item"
         android:textColor="#FFFFFF"
         app:layout_constraintBottom_toBottomOf="parent"

@@ -13,8 +13,13 @@ import com.google.android.material.snackbar.Snackbar;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
@@ -28,25 +33,21 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 //Class responsible for showing user the list of items available at a location
-public class ItemDetails extends AppCompatActivity {
+public class ItemDetails extends Fragment {
     JSONArray markerArray;
     String name;
-
+    View view;
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_item_details);
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("Items Available on Location");
-        ListView listView = (ListView)findViewById(R.id.itemsListView);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        view = inflater.inflate(R.layout.content_item_details, container, false);
+        ListView listView = (ListView)view.findViewById(R.id.itemsListView);
 
 
-        Intent intent = getIntent();
-        ArrayList<String> s = intent.getStringArrayListExtra("Item");
-        if (intent.getStringExtra("markerArray") != null){
+        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("Marker_Data",Context.MODE_PRIVATE);
+        ArrayList<String> s = new ArrayList<>(sharedPreferences.getStringSet("Item",null));
+        if (sharedPreferences.getString("markerArray",null) != null){
             try {
-                markerArray = new JSONArray(intent.getStringExtra("markerArray"));
+                markerArray = new JSONArray(sharedPreferences.getString("markerArray",null));
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -66,7 +67,7 @@ public class ItemDetails extends AppCompatActivity {
 
 
         //Search feature for the user to search for stuff
-        final ArrayAdapter<String> itemListAdapter = new ArrayAdapter<String>(this,R.layout.list_item_text, itemList);
+        final ArrayAdapter<String> itemListAdapter = new ArrayAdapter<String>(getActivity(),R.layout.list_item_text, itemList);
         itemListAdapter.setDropDownViewResource(android.R.layout.simple_expandable_list_item_1);
         listView.setAdapter(itemListAdapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -78,7 +79,7 @@ public class ItemDetails extends AppCompatActivity {
                         if (markerArray.getJSONObject(i).getString("post_id").equals(postId.get(position))){
                             itemContent = String.valueOf(markerArray.getJSONObject(i));
                             name = markerArray.getJSONObject(i).getString("item_name");
-                            SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences("claim_data", Context.MODE_PRIVATE);
+                            SharedPreferences sharedPreferences = getActivity().getSharedPreferences("claim_data", Context.MODE_PRIVATE);
                             SharedPreferences.Editor editor =sharedPreferences.edit();
                             editor.putString("item_content",itemContent);
                             editor.apply();
@@ -91,6 +92,7 @@ public class ItemDetails extends AppCompatActivity {
                 carbonIntensityAsyncTask.execute();
             }
         });
+        return view;
 
     }
 
@@ -115,12 +117,12 @@ public class ItemDetails extends AppCompatActivity {
                 e.printStackTrace();
             }
             //Saving the data of carbon intensity to be used in the application
-            SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences("claim_data", Context.MODE_PRIVATE);
+            SharedPreferences sharedPreferences = getActivity().getSharedPreferences("claim_data", Context.MODE_PRIVATE);
             SharedPreferences.Editor editor =sharedPreferences.edit();
             editor.putString("carbon_intensity",carbonIntensity);
             editor.apply();
-            Intent intent = new Intent(getApplicationContext(),ItemClaim.class);
-            startActivity(intent);
+            //final NavController navController = Navigation.findNavController(view);
+            //navController.navigate(R.id.action_itemDetails_to_itemClaim);
         }
     }
 

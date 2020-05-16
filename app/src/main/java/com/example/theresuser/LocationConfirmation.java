@@ -3,7 +3,9 @@ package com.example.theresuser;
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 
 import android.Manifest;
 import android.content.Context;
@@ -14,7 +16,10 @@ import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -27,6 +32,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -37,7 +43,7 @@ import org.json.JSONException;
 import java.util.ArrayList;
 import java.util.List;
 //Class responsible for getting the user location to be able to post the item
-public class LocationConfirmation extends FragmentActivity implements OnMapReadyCallback {
+public class LocationConfirmation extends Fragment implements OnMapReadyCallback {
 
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 101;
     private GoogleMap mMap;
@@ -46,28 +52,37 @@ public class LocationConfirmation extends FragmentActivity implements OnMapReady
     PlaceDetectionClient placeDetectionClient;
     Location lastLocation;
     boolean permission;
-    Item item;
-    Integer colorId,yearId,itemId,typeId;
+    View view;
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_location_confirmation);
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        view = inflater.inflate(R.layout.activity_location_confirmation, container, false);
+        SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-        geoDataClient = Places.getGeoDataClient(this,null);
-        placeDetectionClient = Places.getPlaceDetectionClient(this,null);
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+        geoDataClient = Places.getGeoDataClient(getActivity(),null);
+        placeDetectionClient = Places.getPlaceDetectionClient(getActivity(),null);
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getActivity());
+
+        Button sendData = (Button)view.findViewById(R.id.sendData);
+        sendData.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                IdGenerator idGenerator = new IdGenerator();
+                idGenerator.execute();
+            }
+        });
+
+        return view;
     }
     //Handelling permissions for the application to get the users location services
     public void permissionHandller(){
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
+        if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
             permission = true;
             updateLocationUI();
         }
         else{
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION},PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
+            ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION},PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
         }
     }
     //Handling the permission request for the user
@@ -118,7 +133,7 @@ public class LocationConfirmation extends FragmentActivity implements OnMapReady
         try {
             if (permission) {
                 Task locationResult = fusedLocationProviderClient.getLastLocation();
-                locationResult.addOnCompleteListener(this, new OnCompleteListener() {
+                locationResult.addOnCompleteListener(getActivity(), new OnCompleteListener() {
                     @Override
                     public void onComplete(@NonNull Task task) {
                         if (task.isSuccessful()) {
@@ -128,7 +143,12 @@ public class LocationConfirmation extends FragmentActivity implements OnMapReady
                                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
                                         new LatLng(lastLocation.getLatitude(),
                                                 lastLocation.getLongitude()), 20));
-                                mMap.addMarker(new MarkerOptions().position(new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude())));
+                                mMap.addMarker(new MarkerOptions().position(new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude()))).setDraggable(true);
+                                SharedPreferences sharedPreferences = getActivity().getSharedPreferences("post_data", Context.MODE_PRIVATE);
+                                SharedPreferences.Editor editor =sharedPreferences.edit();
+                                editor.putFloat("latitude",(float)lastLocation.getLatitude());
+                                editor.putFloat("longitude",(float)lastLocation.getLongitude());
+                                editor.apply();
                             }
                             else{
                                 updateLocationUI();
@@ -151,12 +171,32 @@ public class LocationConfirmation extends FragmentActivity implements OnMapReady
         mMap = googleMap;
 
         updateLocationUI();
+
+        mMap.setOnMarkerDragListener(new GoogleMap.OnMarkerDragListener() {
+            @Override
+            public void onMarkerDragStart(Marker marker) {
+                Toast.makeText(getActivity(),"Move the marker to the location of your kerb.",Toast.LENGTH_LONG).show();
+            }
+
+            @Override
+            public void onMarkerDrag(Marker marker) {
+
+            }
+
+            @Override
+            public void onMarkerDragEnd(Marker marker) {
+                LatLng newLocation = marker.getPosition();
+                SharedPreferences sharedPreferences = getActivity().getSharedPreferences("post_data", Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor =sharedPreferences.edit();
+                editor.putFloat("latitude", (float) newLocation.latitude);
+                editor.putFloat("longitude",(float)newLocation.longitude);
+                editor.apply();
+
+            }
+        });
+
+
         //getDeviceLocation();
-    }
-    //Generating a unique id for the item to be posted
-    public void SendData(View view){
-        IdGenerator idGenerator = new IdGenerator();
-        idGenerator.execute();
     }
 
 //Calling the api to generate the user id
@@ -187,42 +227,12 @@ public class LocationConfirmation extends FragmentActivity implements OnMapReady
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-            SharedPreferences sharedPreferences = getApplication().getSharedPreferences("post_data", Context.MODE_PRIVATE);
+            SharedPreferences sharedPreferences = getActivity().getSharedPreferences("post_data", Context.MODE_PRIVATE);
             SharedPreferences.Editor editor =sharedPreferences.edit();
-            editor.putFloat("latitude",(float)lastLocation.getLatitude());
-            editor.putFloat("longitude",(float)lastLocation.getLongitude());
             editor.putInt("post_id",flag+1);
             editor.apply();
-            CarbonIntensityAsyncTask carbonIntensityAsyncTask = new CarbonIntensityAsyncTask();
-            carbonIntensityAsyncTask.execute();
-        }
-    }
-    //Getting the carbon intensity of the item posted by the user
-    public class CarbonIntensityAsyncTask extends AsyncTask<String,Void,String>{
-
-        @Override
-        protected String doInBackground(String... strings) {
-            String name = getApplicationContext().getSharedPreferences("post_data",MODE_PRIVATE).getString("item_name",null);
-            String itemName = "{\"item_name\":\""+name+"\"}";
-            System.out.println(itemName);
-            String carbonIntensity = AsyncTaskData.carbonIntensity(itemName);
-            return carbonIntensity;
-        }
-
-        @Override
-        protected void onPostExecute(String s) {
-            try {
-                JSONArray carbonIntensityArray = new JSONArray(s);
-                String carbonIntensity = carbonIntensityArray.getJSONObject(0).getString("carbon_intensity");
-                SharedPreferences sharedPreferences = getApplication().getSharedPreferences("post_data", Context.MODE_PRIVATE);
-                SharedPreferences.Editor editor =sharedPreferences.edit();
-                editor.putString("carbon_intensity",carbonIntensity);
-                editor.apply();
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            Intent intent = new Intent(getApplicationContext(),PostDataReview.class);
-            startActivity(intent);
+            final NavController navController = Navigation.findNavController(view);
+            navController.navigate(R.id.action_locationConfirmation2_to_donateStuff);
         }
     }
 }

@@ -1,6 +1,7 @@
 package com.example.theresuser;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.location.Location;
@@ -8,13 +9,24 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.NavOptions;
+import androidx.navigation.Navigation;
 
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextClock;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -22,27 +34,30 @@ import android.widget.Toast;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.Date;
+
 //Class responsible for handeling the data when user claims an object
-public class ItemClaim extends AppCompatActivity {
+public class ItemClaim extends Fragment {
     String data,carbonIntensity,latitude,longitude,userLatitude,userLongitude,name,type,year,color;
     TextView itemName,itemYear,itemType,itemColor,carbonIntensityMessage;
+    Button claim;
+    View view;
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_item_claim);
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("Item Details");
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        view = inflater.inflate(R.layout.content_item_claim, container, false);
+
         //Getting all the saved data of the item that the user has selcted
-        data = getApplicationContext().getSharedPreferences("claim_data",MODE_PRIVATE).getString("item_content",null);
-        carbonIntensity = getApplicationContext().getSharedPreferences("claim_data",MODE_PRIVATE).getString("carbon_intensity",null);
-        userLatitude = getApplicationContext().getSharedPreferences("claim_data",MODE_PRIVATE).getString("user_latitude",null);
-        userLongitude = getApplicationContext().getSharedPreferences("claim_data",MODE_PRIVATE).getString("user_longitude",null);
-        itemName = (TextView)findViewById(R.id.item_name);
-        itemColor = (TextView)findViewById(R.id.item_color);
-        itemType = (TextView)findViewById(R.id.item_type);
-        itemYear = (TextView)findViewById(R.id.item_year);
-        carbonIntensityMessage = (TextView)findViewById(R.id.carbon_message);
+        data = getActivity().getSharedPreferences("claim_data", Context.MODE_PRIVATE).getString("item_content",null);
+        userLatitude = getActivity().getSharedPreferences("claim_data",Context.MODE_PRIVATE).getString("user_latitude",null);
+        userLongitude = getActivity().getSharedPreferences("claim_data",Context.MODE_PRIVATE).getString("user_longitude",null);
+        itemName = (TextView)view.findViewById(R.id.item_name);
+        itemColor = (TextView)view.findViewById(R.id.item_color);
+        itemType = (TextView)view.findViewById(R.id.item_type);
+        itemYear = (TextView)view.findViewById(R.id.item_year);
+        carbonIntensityMessage = (TextView)view.findViewById(R.id.carbon_message);
+        claim = (Button)view.findViewById(R.id.claim);
+
         try {
             //Populating all the data for the user to review
             JSONObject jsonObject = new JSONObject(data);
@@ -52,6 +67,8 @@ public class ItemClaim extends AppCompatActivity {
             type = jsonObject.getString("type_name");
             year = jsonObject.getString("year_range");
             color = jsonObject.getString("color_name");
+            carbonIntensity = jsonObject.getString("carbon_intensity");
+
             itemName.setText(name);
             itemColor.setText(color);
             itemType.setText(type);
@@ -63,6 +80,15 @@ public class ItemClaim extends AppCompatActivity {
         }
 
 
+        claim.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ClaimAsyncTask claimAsyncTask = new ClaimAsyncTask();
+                claimAsyncTask.execute();
+            }
+        });
+
+        return view;
     }
     //Getting the google maps with the navigation from users location to the item
     public void Navigate(View view){
@@ -70,11 +96,8 @@ public class ItemClaim extends AppCompatActivity {
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
         startActivity(intent);
     }
-    //Function to request a claim on an item
-    public void Claim(View view){
-        ClaimAsyncTask claimAsyncTask = new ClaimAsyncTask();
-        claimAsyncTask.execute();
-    }
+
+
     //Running the api to save the data of claimed object
     public class ClaimAsyncTask extends AsyncTask<String,Void,String>{
 
@@ -96,12 +119,68 @@ public class ItemClaim extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(String s) {
-            AlertDialog.Builder builder =new AlertDialog.Builder(ItemClaim.this);
+
+            RecordActivity recordActivity = new RecordActivity();
+            recordActivity.execute();
+        }
+    }
+
+    public class RecordActivity extends AsyncTask<String,Void,String>{
+        @Override
+        protected String doInBackground(String... strings) {
+            String recordData = AsyncTaskData.RecordId();
+            return recordData;
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            int counter = 0;
+            GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(getActivity());
+            Date date = new Date();
+            System.out.println(date);
+            String activityAraay = "";
+            int id = 0;
+            try {
+                JSONObject idJson = new JSONObject(data);
+                id = Integer.parseInt(idJson.getString("post_id"));
+                JSONArray arrayData = new JSONArray(s);
+                for(int i = 0; i <= arrayData.length()-1; i++){
+                    System.out.println(Integer.valueOf(arrayData.getJSONObject(i).getString("record_id")));
+                    if(Integer.valueOf(arrayData.getJSONObject(i).getString("record_id")) > counter){
+                        counter = Integer.valueOf(arrayData.getJSONObject(i).getString("record_id"));
+                    }
+                }
+                counter += 1;
+                UserActivity userActivity = new UserActivity(account.getEmail(),counter,id,0,date);
+                Gson gson = new GsonBuilder().create();
+                activityAraay = gson.toJson(userActivity);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            activityAraay = "["+activityAraay+"]";
+            System.out.println(activityAraay);
+            UpdateActivity updateActivity = new UpdateActivity();
+            updateActivity.execute(activityAraay);
+        }
+    }
+    public class UpdateActivity extends AsyncTask<String,Void,String>{
+
+        @Override
+        protected String doInBackground(String... strings) {
+            AsyncTaskData.postActivity(strings[0]);
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            AlertDialog.Builder builder =new AlertDialog.Builder(getActivity());
             builder.setTitle("Item Claimed!!").setMessage("The item has been claimed by you.").setPositiveButton("OK", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    Intent intent = new Intent(getApplicationContext(),MainActivity.class);
-                    startActivity(intent);
+                    final NavController navController = Navigation.findNavController(view);
+                    NavOptions navOptions = new NavOptions.Builder().setPopUpTo(R.id.findStuff,true).build();
+                    navController.navigate(R.id.action_itemClaim_to_findStuff,null,navOptions);
                 }
             });
 
@@ -109,6 +188,5 @@ public class ItemClaim extends AppCompatActivity {
             alertDialog.show();
         }
     }
-
 
 }

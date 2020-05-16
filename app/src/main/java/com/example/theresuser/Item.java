@@ -18,10 +18,6 @@ public class Item {
         return year_id;
     }
 
-    public Integer getType_id() {
-        return type_id;
-    }
-
     public float getLatitude() {
         return latitude;
     }
@@ -46,10 +42,6 @@ public class Item {
         this.year_id = year_id;
     }
 
-    public void setType_id(Integer type_id) {
-        this.type_id = type_id;
-    }
-
     public void setLatitude(float latitude) {
         this.latitude = latitude;
     }
@@ -58,16 +50,15 @@ public class Item {
         this.longitude = longitude;
     }
 
-    public Item(Integer post_id, Integer color_id, Integer item_id, Integer year_id, Integer type_id, float latitude, float longitude) {
+    public Item(Integer post_id, Integer color_id, Integer item_id, Integer year_id,  float latitude, float longitude) {
         this.post_id = post_id;
         this.color_id = color_id;
         this.item_id = item_id;
         this.year_id = year_id;
-        this.type_id = type_id;
         this.latitude = latitude;
         this.longitude = longitude;
     }
 
-    Integer post_id,color_id,item_id,year_id,type_id;
+    Integer post_id,color_id,item_id,year_id;
     float latitude,longitude;
 }
