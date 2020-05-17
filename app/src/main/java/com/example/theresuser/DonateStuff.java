@@ -1,9 +1,8 @@
 package com.example.theresuser;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -22,10 +21,6 @@ import android.widget.Toast;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapFragment;
-import com.google.android.gms.maps.MapsInitializer;
-import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -38,6 +33,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
@@ -59,6 +55,7 @@ public class DonateStuff extends Fragment {
     JSONArray finalPostArray;
     String finalArray  ="";
     List<Integer> postIdList = new ArrayList<>();
+    Context con;
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     @Override
@@ -75,7 +72,7 @@ public class DonateStuff extends Fragment {
         yearSpinner =(Spinner) view.findViewById(R.id.yearSpinner);
         proceed = (Button)view.findViewById(R.id.proceed);
         currentItemsList = new ArrayList<String[]>();
-        final ListViewCustomAdapter adapter = new ListViewCustomAdapter(getActivity(),R.layout.custom_list_view, (ArrayList<String[]>) currentItemsList);
+        final ListViewCustomAdapter adapter = new ListViewCustomAdapter(con,R.layout.custom_list_view, (ArrayList<String[]>) currentItemsList);
         itemListView.setAdapter(adapter);
 
         finalPostArray = new JSONArray();
@@ -145,16 +142,16 @@ public class DonateStuff extends Fragment {
             @Override
             public void onClick(View v) {
                 final NavController navController = Navigation.findNavController(view);
-                GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(getActivity());
+                GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(con);
                 if (account == null){
                     navController.navigate(R.id.action_donateStuff_to_login);
                 }
                 else {
                     if (edit) {
-                        Toast.makeText(getActivity(), "Please save the item before proceeding.", Toast.LENGTH_LONG).show();
+                        Toast.makeText(con, "Please save the item before proceeding.", Toast.LENGTH_LONG).show();
                     } else {
                         try {
-                            SharedPreferences sharedPreferences = getActivity().getSharedPreferences("post_data", Context.MODE_PRIVATE);
+                            SharedPreferences sharedPreferences = con.getSharedPreferences("post_data", Context.MODE_PRIVATE);
                             float latitude = sharedPreferences.getFloat("latitude", 0);
                             float longitude = sharedPreferences.getFloat("longitude", 0);
                             int postId = sharedPreferences.getInt("post_id", 0);
@@ -202,7 +199,8 @@ public class DonateStuff extends Fragment {
                         finalArray = "[" + finalArray + "]";
                         SendDataAysnc sendDataAysnc = new SendDataAysnc();
                         sendDataAysnc.execute();
-                        //navController.navigate(R.id.action_donateStuff_to_locationConfirmation2);
+                        NavOptions navOptions = new NavOptions.Builder().setPopUpTo(R.id.findStuff,true).build();
+                        navController.navigate(R.id.action_donateStuff_to_locationConfirmation2,null,navOptions);
                     }
                 }
             }
@@ -218,6 +216,14 @@ public class DonateStuff extends Fragment {
             }
         });
         return view;
+    }
+
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        con = context;
+
     }
 
     public class SendDataAysnc extends AsyncTask<String,Void,String> {
@@ -245,7 +251,7 @@ public class DonateStuff extends Fragment {
         @Override
         protected void onPostExecute(String s) {
             int counter = 0;
-            GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(getActivity());
+            GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(con);
             Date date = new Date();
             System.out.println(date);
             String activityAraay = "";
@@ -323,13 +329,13 @@ public class DonateStuff extends Fragment {
                 }
 
 
-                final ArrayAdapter<String> colorSpinnerAdapter = new ArrayAdapter<String>(getActivity(),android.R.layout.simple_spinner_item, colorList);
+                final ArrayAdapter<String> colorSpinnerAdapter = new ArrayAdapter<String>(con,android.R.layout.simple_spinner_item, colorList);
                 colorSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_expandable_list_item_1);
 
-                final ArrayAdapter<String> itemSpinnerAdapter = new ArrayAdapter<String>(getActivity(),android.R.layout.simple_spinner_item, itemList);
+                final ArrayAdapter<String> itemSpinnerAdapter = new ArrayAdapter<String>(con,android.R.layout.simple_spinner_item, itemList);
                 colorSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_expandable_list_item_1);
 
-                final ArrayAdapter<String> yearSpinnerAdapter = new ArrayAdapter<String>(getActivity(),android.R.layout.simple_spinner_item, yearList);
+                final ArrayAdapter<String> yearSpinnerAdapter = new ArrayAdapter<String>(con,android.R.layout.simple_spinner_item, yearList);
                 colorSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_expandable_list_item_1);
 
                 colorSpinner.setAdapter(colorSpinnerAdapter);

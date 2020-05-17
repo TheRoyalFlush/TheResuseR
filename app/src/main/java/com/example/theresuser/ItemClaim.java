@@ -11,6 +11,7 @@ import android.os.Bundle;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.Gson;
@@ -35,13 +36,14 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Arrays;
 import java.util.Date;
 
 //Class responsible for handeling the data when user claims an object
 public class ItemClaim extends Fragment {
     String data,carbonIntensity,latitude,longitude,userLatitude,userLongitude,name,type,year,color;
     TextView itemName,itemYear,itemType,itemColor,carbonIntensityMessage;
-    Button claim;
+    Button claim,route;
     View view;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -57,6 +59,7 @@ public class ItemClaim extends Fragment {
         itemYear = (TextView)view.findViewById(R.id.item_year);
         carbonIntensityMessage = (TextView)view.findViewById(R.id.carbon_message);
         claim = (Button)view.findViewById(R.id.claim);
+        route = (Button)view.findViewById(R.id.route);
 
         try {
             //Populating all the data for the user to review
@@ -78,23 +81,32 @@ public class ItemClaim extends Fragment {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
+        System.out.println(Double.valueOf(userLatitude));
+        final float[] distance = new float[1];
+        Location.distanceBetween(Double.valueOf(userLatitude),Double.valueOf(userLongitude),Double.valueOf(latitude),Double.valueOf(longitude),distance);
 
         claim.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ClaimAsyncTask claimAsyncTask = new ClaimAsyncTask();
-                claimAsyncTask.execute();
+                if (distance[0] < 50) {
+                    ClaimAsyncTask claimAsyncTask = new ClaimAsyncTask();
+                    claimAsyncTask.execute();
+                }
+                else{
+                    Toast.makeText(getActivity(),"You need to be near the item to claim it.",Toast.LENGTH_LONG).show();
+                }
             }
         });
 
+        route.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String uri = "http://maps.google.com/maps?saddr=" + userLatitude + "," + userLongitude + "&daddr=" + latitude + "," + longitude;
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
+                startActivity(intent);
+            }
+        });
         return view;
-    }
-    //Getting the google maps with the navigation from users location to the item
-    public void Navigate(View view){
-        String uri = "http://maps.google.com/maps?saddr=" + userLatitude + "," + userLongitude + "&daddr=" + latitude + "," + longitude;
-        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
-        startActivity(intent);
     }
 
 

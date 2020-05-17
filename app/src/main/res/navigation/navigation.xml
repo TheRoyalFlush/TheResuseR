@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/navigation"
+    app:startDestination="@+id/findStuff">
+    <fragment
+        android:id="@+id/findStuff"
+        android:name="com.example.theresuser.FindStuff"
+        android:label="fragment_find_stuff"
+        tools:layout="@layout/fragment_find_stuff">
+        <action
+            android:id="@+id/action_findStuff_to_itemClaim"
+            app:destination="@id/itemClaim"
+            app:popUpTo="@+id/findStuff" />
+        <action
+            android:id="@+id/action_findStuff_to_login"
+            app:destination="@id/login"
+            app:popUpTo="@+id/findStuff" />
+    </fragment>
+    <fragment
+        android:id="@+id/donateStuff"
+        android:name="com.example.theresuser.DonateStuff"
+        android:label="fragment_donate_stuff"
+        tools:layout="@layout/fragment_donate_stuff">
+        <action
+            android:id="@+id/action_donateStuff_to_login"
+            app:destination="@id/login"
+            app:popUpTo="@+id/donateStuff" />
+        <action
+            android:id="@+id/action_donateStuff_to_locationConfirmation2"
+            app:destination="@id/locationConfirmation2" />
+    </fragment>
+    <fragment
+        android:id="@+id/itemClaim"
+        android:name="com.example.theresuser.ItemClaim"
+        android:label="activity_item_claim"
+        tools:layout="@layout/activity_item_claim" >
+        <action
+            android:id="@+id/action_itemClaim_to_findStuff"
+            app:destination="@id/findStuff" />
+    </fragment>
+    <fragment
+        android:id="@+id/locationConfirmation2"
+        android:name="com.example.theresuser.LocationConfirmation"
+        android:label="activity_location_confirmation"
+        tools:layout="@layout/activity_location_confirmation" >
+        <action
+            android:id="@+id/action_locationConfirmation2_to_donateStuff"
+            app:destination="@id/donateStuff"
+            app:popUpTo="@+id/locationConfirmation2" />
+    </fragment>
+    <fragment
+        android:id="@+id/dashboard"
+        android:name="com.example.theresuser.Dashboard"
+        android:label="fragment_dashboard"
+        tools:layout="@layout/fragment_dashboard">
+        <action
+            android:id="@+id/action_dashboard_to_login"
+            app:destination="@id/login"
+            app:popUpTo="@+id/dashboard" />
+    </fragment>
+    <fragment
+        android:id="@+id/login"
+        android:name="com.example.theresuser.Login"
+        android:label="fragment_login"
+        tools:layout="@layout/fragment_login" />
+    <fragment
+        android:id="@+id/about2"
+        android:name="com.example.theresuser.About"
+        android:label="fragment_about"
+        tools:layout="@layout/fragment_about" />
+    <fragment
+        android:id="@+id/settings"
+        android:name="com.example.theresuser.Settings"
+        android:label="fragment_settings"
+        tools:layout="@layout/fragment_settings" />
+</navigation>

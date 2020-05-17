@@ -7,10 +7,14 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
+import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -19,6 +23,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
@@ -47,9 +52,11 @@ import org.json.JSONException;
 
 import android.widget.Toast;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 import androidx.annotation.NonNull;
@@ -73,6 +80,7 @@ public class FindStuff extends Fragment implements OnMapReadyCallback {
     boolean queryFlag;
     String queryString = "";
     List<String> nameList = new ArrayList<>();
+    List<String> typeList = new ArrayList<>();
     ListView itemListView;
     List<String[]> currentItemsList;
     ListViewCustomAdapter adapter;
@@ -85,6 +93,12 @@ public class FindStuff extends Fragment implements OnMapReadyCallback {
             savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_find_stuff, container, false);
         setHasOptionsMenu(true);
+
+        LocationManager locationManager = (LocationManager)getActivity().getSystemService(Context.LOCATION_SERVICE);
+        if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+            Toast.makeText(getActivity(), "Please enable location services before proceeding", Toast.LENGTH_LONG).show();
+            startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+        }
 
         final SupportMapFragment mapFragment = (SupportMapFragment)getChildFragmentManager().findFragmentById(R.id.mapView);
         mapFragment.getMapAsync(this);
@@ -211,6 +225,7 @@ public class FindStuff extends Fragment implements OnMapReadyCallback {
 
                 mMap.setMyLocationEnabled(true);
                 mMap.getUiSettings().setMyLocationButtonEnabled(true);
+                mMap.getUiSettings().setMapToolbarEnabled(false);
                 getDeviceLocation();
                 PopulateMap populateMap = new PopulateMap();
                 populateMap.execute();
@@ -276,13 +291,26 @@ public class FindStuff extends Fragment implements OnMapReadyCallback {
 
                                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
                                         new LatLng(lastLocation.getLatitude(),
-                                                lastLocation.getLongitude()), 20));
+                                                lastLocation.getLongitude()), 12));
                                 mMap.addMarker(new MarkerOptions().position(new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude())).title("Your Location").draggable(true)).showInfoWindow();
                                 SharedPreferences sharedPreferences = getActivity().getSharedPreferences("claim_data", Context.MODE_PRIVATE);
                                 SharedPreferences.Editor editor = sharedPreferences.edit();
                                 editor.putString("user_latitude", String.valueOf(lastLocation.getLatitude()));
                                 editor.putString("user_longitude", String.valueOf(lastLocation.getLongitude()));
                                 editor.apply();
+
+                                Geocoder geocoder;
+                                List<Address> addressList;
+                                geocoder = new Geocoder(getActivity(), Locale.getDefault());
+
+                                try {
+                                    addressList = geocoder.getFromLocation(lastLocation.getLatitude(),lastLocation.getLongitude(), 1);
+                                    String address = addressList.get(0).getAddressLine(0);
+                                    System.out.println(address);
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+
                             }
                             else {
                                 updateLocationUI();
@@ -309,7 +337,8 @@ public class FindStuff extends Fragment implements OnMapReadyCallback {
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                if (!nameList.contains(query)){
+                System.out.println(typeList);
+                if (!nameList.contains(query.toLowerCase()) && !typeList.contains(query.toLowerCase())){
                     System.out.println("query no");
                     Toast.makeText(getActivity(),"No Items Found",Toast.LENGTH_LONG).show();
                     return false;
@@ -325,10 +354,12 @@ public class FindStuff extends Fragment implements OnMapReadyCallback {
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                System.out.println("text change");
                 return false;
             }
+
+
         });
+
         super.onCreateOptionsMenu(menu, inflater);
     }
 
@@ -366,7 +397,7 @@ public class FindStuff extends Fragment implements OnMapReadyCallback {
             markerArray = mapArray;
             for(int i = 0; i<= mapArray.length() - 1;i++) {
                 if (queryFlag) {
-                    if (mapArray.getJSONObject(i).getString("item_name").toLowerCase().equals(queryString.toLowerCase())) {
+                    if (mapArray.getJSONObject(i).getString("item_name").toLowerCase().equals(queryString.toLowerCase())|| mapArray.getJSONObject(i).getString("type_name").toLowerCase().equals(queryString.toLowerCase())) {
                         System.out.println("query populate");
                         markerSet.add(new LatLng(Double.valueOf(mapArray.getJSONObject(i).getString("latitude")), Double.valueOf(mapArray.getJSONObject(i).getString("longitude"))));
                     }
@@ -374,6 +405,7 @@ public class FindStuff extends Fragment implements OnMapReadyCallback {
                 else{
                     markerSet.add(new LatLng(Double.valueOf(mapArray.getJSONObject(i).getString("latitude")), Double.valueOf(mapArray.getJSONObject(i).getString("longitude"))));
                     nameList.add(mapArray.getJSONObject(i).getString("item_name").toLowerCase());
+                    typeList.add(mapArray.getJSONObject(i).getString("type_name").toLowerCase());
                 }
             }
 
@@ -383,8 +415,7 @@ public class FindStuff extends Fragment implements OnMapReadyCallback {
                 String postName = "";
                 for (int j = 0; j <= mapArray.length() - 1;j++) {
                     if (queryFlag) {
-                        if (mapArray.getJSONObject(j).getString("item_name").toLowerCase().equals(queryString.toLowerCase())) {
-                            System.out.println("query pupulate map");
+                        if (mapArray.getJSONObject(j).getString("item_name").toLowerCase().equals(queryString.toLowerCase()) || mapArray.getJSONObject(j).getString("type_name").toLowerCase().equals(queryString.toLowerCase())) {
                             if (markerList.get(i).equals(new LatLng(Double.valueOf(mapArray.getJSONObject(j).getString("latitude")), Double.valueOf(mapArray.getJSONObject(j).getString("longitude"))))) {
                                 postName = postName + mapArray.getJSONObject(j).getString("item_name").toUpperCase() + "\n";
                                 markerTagList.add(mapArray.getJSONObject(j).getString("post_id"));
