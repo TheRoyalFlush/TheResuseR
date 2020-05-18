@@ -63,7 +63,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
+//Fragment to populate the dashboard
 public class Dashboard extends Fragment {
 
     LineChart lineChart;
@@ -86,6 +86,8 @@ public class Dashboard extends Fragment {
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_dashboard, container, false);
         filterSpinner = (Spinner) view.findViewById(R.id.filterSpinnerLine);
+
+        //Setting up charts
         lineChart = (LineChart) view.findViewById(R.id.lineChart);
         lineChart.setDragEnabled(true);
         lineChart.setScaleEnabled(true);
@@ -108,7 +110,7 @@ public class Dashboard extends Fragment {
         RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) pieChart.getLayoutParams();
         params.setMargins(0, 0, 0, -off);
         pieChart.setLayoutParams(params);
-
+//Setting up spinner
         List<String> months = new ArrayList<>();
         months.add("January");
         months.add("February");
@@ -193,6 +195,7 @@ public class Dashboard extends Fragment {
         con = context;
 
     }
+    //Getting user to signin
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -224,7 +227,7 @@ public class Dashboard extends Fragment {
 
         }
     }
-
+//Registering user
     public class Registeruser extends AsyncTask<String,Void,String> {
         @Override
         protected String doInBackground(String... strings) {
@@ -238,7 +241,7 @@ public class Dashboard extends Fragment {
             userActivityData.execute();
         }
     }
-
+//Getting the user activities
     public class UserActivityData extends AsyncTask<String,Void,String>{
         @Override
         protected String doInBackground(String... strings) {
@@ -307,7 +310,7 @@ public class Dashboard extends Fragment {
 
                     LineData lineData = new LineData(dataSets);
                     lineData.notifyDataChanged();
-
+                    //Adding values to the charts
                     lineChart.setData(lineData);
                     lineChart.notifyDataSetChanged();
                     lineChart.invalidate();
@@ -339,7 +342,7 @@ public class Dashboard extends Fragment {
             }
         }
     }
-
+//Getting the top three contributers
     public class TopThree extends AsyncTask<String,Void,String>{
         @Override
         protected String doInBackground(String... strings) {
@@ -380,7 +383,7 @@ public class Dashboard extends Fragment {
             }
         }
     }
-
+//CHecking if user in the top three contributers
     private void userNotInTopThree(JSONArray topThreeArray) throws JSONException {
         ArrayList<BarEntry> barEntries = new ArrayList<>();
         for (int i = 0; i<= topThreeArray.length()-1;i++){
@@ -403,7 +406,7 @@ public class Dashboard extends Fragment {
             barChart.invalidate();
         }
     }
-
+//Populating the bar chart
     private void userInTopThree(JSONArray topThreeArray) throws JSONException {
         ArrayList<BarEntry> barEntries = new ArrayList<>();
         for (int i = 0; i<= topThreeArray.length()-2;i++){

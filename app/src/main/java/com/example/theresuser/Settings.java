@@ -32,7 +32,7 @@ import org.json.JSONObject;
 import java.util.Calendar;
 import java.util.Locale;
 
-
+//Settings scrren for the application
 public class Settings extends Fragment {
 
     Switch english,chinese,reminder;
@@ -62,7 +62,7 @@ public class Settings extends Fragment {
         chinese = (Switch)view.findViewById(R.id.chinese);
         reminder = (Switch)view.findViewById(R.id.reminder);
 
-
+//Checking the current language
         if (language != null) {
             if (language.equals("english")){
                 english.setChecked(true);
@@ -138,7 +138,7 @@ public class Settings extends Fragment {
 
         return view;
     }
-
+//Adding intent for the reminder
     public static class TimePickerFragment extends DialogFragment
             implements TimePickerDialog.OnTimeSetListener {
 

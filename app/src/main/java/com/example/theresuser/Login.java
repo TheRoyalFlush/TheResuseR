@@ -24,7 +24,7 @@ import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.Task;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-
+//Getting the user to login to the application
 public class Login extends Fragment {
 
     private static final int RC_SIGN_IN = 101;

@@ -54,6 +54,7 @@ public class MainActivity extends AppCompatActivity  {
         setContentView(R.layout.activity_main);
         resources = getBaseContext().getResources();
          context = getBaseContext();
+
         Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -65,7 +66,7 @@ public class MainActivity extends AppCompatActivity  {
 
 
     }
-
+//Splash screen setup
     public void showSplash(){
         final TextView close,previous,next;
         final Dialog dialog = new Dialog(this);
@@ -95,7 +96,7 @@ public class MainActivity extends AppCompatActivity  {
                 dialog.dismiss();
             }
         });
-
+//Populating images
         previous.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

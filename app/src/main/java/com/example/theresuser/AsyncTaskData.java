@@ -244,7 +244,7 @@ public class AsyncTaskData {
             connection.disconnect();
         }
     }
-
+//Registering users
     public static void registerUser(String finalPostArray){
         URL url = null;
         HttpURLConnection connection = null;
@@ -272,7 +272,7 @@ public class AsyncTaskData {
             connection.disconnect();
         }
     }
-
+//Getting all user activities
     public static String userActivity(String userName) {
         URL url = null;
         HttpURLConnection connection = null;
@@ -304,7 +304,7 @@ public class AsyncTaskData {
         }
         return userData;
     }
-
+//Getting the top three contributers
     public static String topThree(String topThree) {
 
         URL url = null;
@@ -337,7 +337,7 @@ public class AsyncTaskData {
         }
         return topThreeData;
     }
-
+//Getting the day for the bin collection reminder
     public static String reminderDay(String location) {
 
         URL url = null;
