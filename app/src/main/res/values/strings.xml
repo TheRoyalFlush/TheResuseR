@@ -30,7 +30,7 @@
     <string name="donate">Donate</string>
     <string name="previous" translatable="false"><![CDATA[<]]></string>
     <string name="next" translatable="false"><![CDATA[>]]></string>
-    <string name="welcome">WELCOME</string>
+    <string name="welcome">Welcome </string>
     <string name="kg">Kg</string>
     <string name="itemClaim">Item Claimed!!</string>
     <string name="claimMsg">The item has been claimed by you.</string>
@@ -45,11 +45,14 @@
     <string name="reusinglessthanone">Reusing this item is equivalent to planting almost 1 tree.</string>
     <string name="reusing">Reusing this item is equivalent to planting</string>
     <string name="reusingtrees">trees.</string>
-    <string name="aboutUs">The android application-ReuserR is a bridging platform between the hard waste disposer and seeker. Its chief intention is the advocacy for a greener earth. This objective is achieved in two-fold:\n 1. Increasing hard waste reuse through the network of local residences before ending up in the landfill; thereby not only providing people with the means to contribute to the community but also offering Melbournians with a means of accessing items that are still in good condition.\n 2. Promoting awareness on the importance of reusing hard waste through interactive educational material and multilingual support; with Mandarin being included “out of the box”.</string>
+    <string name="aboutUs">The ReuserR is a bridging platform between the hard waste disposer and seeker. Its chief intention is the advocacy for a greener earth. This objective is achieved in two-fold:\n 1. Increasing hard waste reuse through the network of local residences before ending up in the landfill; thereby not only providing people with the means to contribute to the community but also offering Melbournians with a means of accessing items that are still in good condition.\n 2. Promoting awareness on the importance of reusing hard waste through interactive educational material and multilingual support; with Mandarin being included “out of the box”.</string>
     <string name="about_the_resuser">About The ResuseR</string>
     <string name="monash_council">Monash Council</string>
     <string name="monashFact">The city of Monash is one of the most culturally rich councils in Melbourne, according to ABS’ (Australian Bureau of Statistics) 2016 census, it is home to almost 90,000 residents who were born overseas, this accounts for almost 49% of the population who are now calling Monash their new home. For example:   39.5% in Clayton, 28.6% in Notting Hill are attending university (compared to 6.4% across Melbourne).  Immigrants from an assortment of backgrounds (12.5% from China, 5.3% from India, 3.6% from Sri Lanka and more)  This cultural diversity brings an exciting but unprecedented challenge in the field of hard waste. According to the local government’s official records, the resources devoted to the management of hard waste has been increasing steadily over the years. In 2016, it collected 5,030 tonnes of hard waste (with only a 20% diversion rate), which required $1,030,000 in expenditure for its proper management.</string>
-    <string name="neartheitem">You need to be near the item to claim it.</string>
+    <string name="neartheitem">You need to be within 50 meters of the item to claim it.</string>
     <string name="noitem">No Items found. Add items to post.</string>
     <string name="save">Please save the item before proceeding.</string>
+    <string name="selectitem">Select Item You Want To Donate</string>
+    <string name="edit">Edit Item Details</string>
+    <string name="save1">Save</string>
 </resources>

@@ -1,5 +1,6 @@
 package com.example.theresuser;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -81,10 +82,11 @@ public class DonateStuff extends Fragment {
         itemDataAsyncTaks.execute();
 
         itemListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @SuppressLint("SetTextI18n")
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                heading.setText("Edit Item Details");
-                addMore.setText("Save");
+                heading.setText(getString(R.string.edit));
+                addMore.setText(getString(R.string.save1));
                 pos = position;
                 edit = true;
                 try {
@@ -127,7 +129,7 @@ public class DonateStuff extends Fragment {
                         currentItemsList.set(pos,new String[]{itemArray.getJSONObject(itemSpinner.getSelectedItemPosition()).getString("item_name"),
                                 colorArray.getJSONObject(colorSpinner.getSelectedItemPosition()).getString("color_name"),
                                 yearArray.getJSONObject(yearSpinner.getSelectedItemPosition()).getString("year_range")});
-                        heading.setText("Select Item You Want To Donate");
+                        heading.setText(getString(R.string.selectitem));
                         addMore.setText("ADD");
                         edit = false;
                         adapter.notifyDataSetChanged();
@@ -153,6 +155,7 @@ public class DonateStuff extends Fragment {
                             Toast.makeText(con, getString(R.string.save), Toast.LENGTH_LONG).show();
                         } else {
                             try {
+                                Toast.makeText(getActivity(),"Your items have been posted online for others to see.",Toast.LENGTH_LONG).show();
                                 SharedPreferences sharedPreferences = con.getSharedPreferences("post_data", Context.MODE_PRIVATE);
                                 float latitude = sharedPreferences.getFloat("latitude", 0);
                                 float longitude = sharedPreferences.getFloat("longitude", 0);

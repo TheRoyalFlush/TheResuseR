@@ -366,6 +366,12 @@ public class Dashboard extends Fragment {
                 }
                 if(counter == 2){
                     userInTopThree(topThreeArray);
+                    Toast.makeText(getActivity(),"Congratulations! you are one of the top three contributers.",Toast.LENGTH_LONG).show();
+                }
+
+                if (topThreeArray.length() == 0){
+                    barChart.clear();
+                    barChart.invalidate();
                 }
 
 
@@ -392,6 +398,10 @@ public class Dashboard extends Fragment {
         barChart.getAxisRight().setDrawGridLines(false);
         barChart.notifyDataSetChanged();
         barChart.invalidate();
+        if (barEntries.size() == 0){
+            barChart.clear();
+            barChart.invalidate();
+        }
     }
 
     private void userInTopThree(JSONArray topThreeArray) throws JSONException {

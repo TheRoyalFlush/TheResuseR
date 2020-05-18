@@ -104,7 +104,6 @@ public class MainActivity extends AppCompatActivity  {
                 if (count == 1){
                     previous.setVisibility(View.INVISIBLE);
                 }
-
                 if (count == 1){
                     screen.setImageResource(R.drawable.one);
                 }
@@ -117,13 +116,6 @@ public class MainActivity extends AppCompatActivity  {
                 if (count == 4){
                     screen.setImageResource(R.drawable.four);
                 }
-                if (count == 5){
-                    screen.setImageResource(R.drawable.five);
-                }
-                if (count == 6){
-                    screen.setImageResource(R.drawable.six);
-                }
-
             }
         });
 
@@ -131,13 +123,12 @@ public class MainActivity extends AppCompatActivity  {
             @Override
             public void onClick(View v) {
                 previous.setVisibility(View.VISIBLE);
-                if (count != 7) {
+                if (count != 4) {
                     count += 1;
                 }
-                if(count == 7){
+                if(count == 4){
                     next.setVisibility(View.INVISIBLE);
                 }
-
                 if (count == 2){
                     screen.setImageResource(R.drawable.two);
                 }
@@ -146,15 +137,6 @@ public class MainActivity extends AppCompatActivity  {
                 }
                 if (count == 4){
                     screen.setImageResource(R.drawable.four);
-                }
-                if (count == 5){
-                    screen.setImageResource(R.drawable.five);
-                }
-                if (count == 6){
-                    screen.setImageResource(R.drawable.six);
-                }
-                if (count == 7){
-                    screen.setImageResource(R.drawable.seven);
                 }
             }
         });

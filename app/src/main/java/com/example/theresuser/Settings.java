@@ -33,9 +33,6 @@ import java.util.Calendar;
 import java.util.Locale;
 
 
-/**
- * A simple {@link Fragment} subclass.
- */
 public class Settings extends Fragment {
 
     Switch english,chinese,reminder;
@@ -56,6 +53,7 @@ public class Settings extends Fragment {
         view = inflater.inflate(R.layout.fragment_settings, container, false);
 
         sharedPreferences = getActivity().getSharedPreferences("Language", Context.MODE_PRIVATE);
+        String language = sharedPreferences.getString("language",null);
         final SharedPreferences.Editor editor = sharedPreferences.edit();
 
         reminderTextView = (TextView)view.findViewById(R.id.reminderTime);
@@ -64,7 +62,7 @@ public class Settings extends Fragment {
         chinese = (Switch)view.findViewById(R.id.chinese);
         reminder = (Switch)view.findViewById(R.id.reminder);
 
-        String language = sharedPreferences.getString("language",null);
+
         if (language != null) {
             if (language.equals("english")){
                 english.setChecked(true);
@@ -105,7 +103,7 @@ public class Settings extends Fragment {
                     english.setChecked(true);
                     editor.putString("language","english");
                     editor.apply();
-                    changeLang("zh");
+                    changeLang("en");
                 }
             }
         });
@@ -165,11 +163,14 @@ public class Settings extends Fragment {
             editor.putInt("hour",hourOfDay);
             editor.putInt("minute",minute);
             editor.apply();
+            SharedPreferences sp = getActivity().getSharedPreferences("reminder",Context.MODE_PRIVATE);
+            String day = sp.getString("day",null);
             alarmManager = (AlarmManager)getActivity().getSystemService(Context.ALARM_SERVICE);
             intent = new Intent(getActivity(),SheduleIntentService.class);
             pendingIntent = PendingIntent.getService(getActivity(),0,intent,0);
             alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime(),
                     AlarmManager.INTERVAL_DAY*7,pendingIntent);
+            Toast.makeText(getActivity(),"Your reminder has been set for "+day+" at "+hourOfDay+":"+minute,Toast.LENGTH_LONG).show();
 
         }
     }
@@ -191,7 +192,7 @@ public class Settings extends Fragment {
                 String day = dayArray.getString("day");
                 SharedPreferences sharedPreferences = getActivity().getSharedPreferences("reminder",Context.MODE_PRIVATE);
                 SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.putString(day,null);
+                editor.putString("day",day);
                 editor.apply();
             } catch (JSONException e) {
                 e.printStackTrace();

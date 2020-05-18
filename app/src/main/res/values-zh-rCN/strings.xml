@@ -35,4 +35,16 @@
     <string name="alarmMsg">您的闹钟将设置在垃圾回收日之前的一天。</string>
     <string name="pieMsg">您(与社区的平均水平相比)回收利用物品的总数量（公斤）。</string>
     <string name="barMsg">您社区中减少碳排放的杰出贡献者。</string>
+    <string name="aboutUs">安卓应用程序 ReuserR为大型垃圾处理者和回收利用者提供连接的平台。此程序的主要愿景是倡导绿色地球。该愿景可以通过两个方面实现：  1. 在大型垃圾进入垃圾填埋场之前，通过本地居民网络来实现其再次回收利用；此举不仅为为居民提供了帮助社区回收的方法，而且还为那些需要可回收物品的当地居民提供了寻找的方法。  2.通过互动式教学信息和多语种支持，提升对于物品二次利用的重要性认识；普通话功能随点随用</string>
+    <string name="monash_council">Monash社区</string>
+    <string name="monashFact">根据澳大利亚统计局（ABS）2016年的人口普查，莫纳什市是墨尔本最多元文化的社区之一。该市拥有近9万名海外移民，占莫纳什市人口总数的49％ 。 例如：39.5％的克莱顿居民，28.6％诺丁山居民正在上大学（相比之下，墨尔本市区居民为6.4％）。有来自不同背景的移民（12.5％来自中国，5.3％来自印度，3.6％来自斯里兰卡等)。这种文化多样性对于大  型废物回收带来了前所未有的挑战。 多年来，根据当地政府的官方记录用于大型废物管理的资源一直在稳定增长。政府在 2016年收集了5,030吨废物（转移率仅20％），需要大约1,030,000美元的管理费用。</string>
+    <string name="reusinglessthanone">" 重用此项目等效于种植近一棵树。"</string>
+    <string name="reusing">重用此项目等同于种植</string>
+    <string name="reusingtrees">"树木 "</string>
+    <string name="neartheitem">" 您必须在距离该物品50米以内的地方才能领取它。"</string>
+    <string name="noitem">" 未找到任何项目。添加要发布的项目"</string>
+    <string name="save">" 请先保存该项目，然后再继续。"</string>
+    <string name="selectitem">选择您要捐赠的物品</string>
+    <string name="edit">"编辑项目详细信息 "</string>
+    <string name="save1">"救 "</string>
 </resources>
