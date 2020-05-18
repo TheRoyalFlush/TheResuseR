@@ -61,7 +61,7 @@ public class LocationConfirmation extends Fragment implements OnMapReadyCallback
 
         LocationManager locationManager = (LocationManager)getActivity().getSystemService(Context.LOCATION_SERVICE);
         if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-            Toast.makeText(getActivity(), "Please enable location services before proceeding", Toast.LENGTH_LONG).show();
+            Toast.makeText(getActivity(), getString(R.string.SignInMsg), Toast.LENGTH_LONG).show();
             startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
         }
 
@@ -70,7 +70,7 @@ public class LocationConfirmation extends Fragment implements OnMapReadyCallback
         mapFragment.getMapAsync(this);
 
 
-
+        Toast.makeText(getActivity(),getString(R.string.markerHold),Toast.LENGTH_LONG).show();
         geoDataClient = Places.getGeoDataClient(getActivity(),null);
         placeDetectionClient = Places.getPlaceDetectionClient(getActivity(),null);
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getActivity());
@@ -186,7 +186,7 @@ public class LocationConfirmation extends Fragment implements OnMapReadyCallback
         mMap.setOnMarkerDragListener(new GoogleMap.OnMarkerDragListener() {
             @Override
             public void onMarkerDragStart(Marker marker) {
-                Toast.makeText(getActivity(),"Move the marker to the location of your kerb.",Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity(),getString(R.string.MarkerKerb),Toast.LENGTH_LONG).show();
             }
 
             @Override

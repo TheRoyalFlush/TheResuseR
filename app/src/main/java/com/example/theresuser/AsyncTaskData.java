@@ -337,4 +337,37 @@ public class AsyncTaskData {
         }
         return topThreeData;
     }
+
+    public static String reminderDay(String location) {
+
+        URL url = null;
+        HttpURLConnection connection = null;
+        final String methodPath="day";
+        String reminderDay = "";
+        try {
+            url = new URL(BASE_URL + methodPath);
+            System.out.println(url);
+            connection = (HttpURLConnection) url.openConnection();
+            connection.setReadTimeout(10000);
+            connection.setConnectTimeout(15000);
+            connection.setRequestMethod("POST");
+            connection.setDoOutput(true);
+            connection.setFixedLengthStreamingMode(location.getBytes().length);
+            connection.setRequestProperty("Content-Type", "application/json");
+            PrintWriter out = new PrintWriter(connection.getOutputStream());
+            out.print(location);
+            out.close();
+            Log.i("error",connection.getResponseMessage());
+            Scanner inStream = new Scanner(connection.getInputStream());
+            while (inStream.hasNextLine()) {
+                reminderDay += inStream.nextLine();
+            }
+            System.out.println(reminderDay);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            connection.disconnect();
+        }
+        return reminderDay;
+    }
 }

@@ -1,6 +1,7 @@
 package com.example.theresuser;
 
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -28,6 +29,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextClock;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -44,6 +46,7 @@ public class ItemClaim extends Fragment {
     String data,carbonIntensity,latitude,longitude,userLatitude,userLongitude,name,type,year,color;
     TextView itemName,itemYear,itemType,itemColor,carbonIntensityMessage;
     Button claim,route;
+    float totalCI;
     View view;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -76,7 +79,8 @@ public class ItemClaim extends Fragment {
             itemColor.setText(color);
             itemType.setText(type);
             itemYear.setText(year);
-            carbonIntensityMessage.setText(name+" contains "+carbonIntensity+" carbon intensity(amount of CO2 in kg per kg of the item). Thank you! for reducing that from going into atmosphere by picking the item for reuse through Resuser");
+            totalCI = Float.parseFloat(carbonIntensity)*Integer.valueOf(jsonObject.getString("kg"));
+            carbonIntensityMessage.setText(name+" "+getString(R.string.contains)+" "+totalCI+" "+getString(R.string.CImsg));
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -89,11 +93,31 @@ public class ItemClaim extends Fragment {
             @Override
             public void onClick(View v) {
                 if (distance[0] < 50) {
-                    ClaimAsyncTask claimAsyncTask = new ClaimAsyncTask();
-                    claimAsyncTask.execute();
+                    final Dialog dialog = new Dialog(getActivity());
+                    dialog.setContentView(R.layout.popup_activity);
+                    dialog.setCanceledOnTouchOutside(false);
+                    TextView treeMsg = (TextView)dialog.findViewById(R.id.treeMsg);
+                    float numTree = (float) (0.015*totalCI);
+                    int finalTree = (int)(numTree);
+                    if (finalTree >= 1){
+                        treeMsg.setText(getString(R.string.reusing)+finalTree+getString(R.string.reusingtrees));
+                    }
+                    if (finalTree < 1){
+                        treeMsg.setText(getString(R.string.reusinglessthanone));
+                    }
+                    TextView close = (TextView)dialog.findViewById(R.id.close2);
+                    close.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            dialog.dismiss();
+                            ClaimAsyncTask claimAsyncTask = new ClaimAsyncTask();
+                            claimAsyncTask.execute();
+                        }
+                    });
+                    dialog.show();
                 }
                 else{
-                    Toast.makeText(getActivity(),"You need to be near the item to claim it.",Toast.LENGTH_LONG).show();
+                    Toast.makeText(getActivity(),getString(R.string.neartheitem),Toast.LENGTH_LONG).show();
                 }
             }
         });
@@ -187,7 +211,7 @@ public class ItemClaim extends Fragment {
         @Override
         protected void onPostExecute(String s) {
             AlertDialog.Builder builder =new AlertDialog.Builder(getActivity());
-            builder.setTitle("Item Claimed!!").setMessage("The item has been claimed by you.").setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            builder.setTitle(getString(R.string.itemClaim)).setMessage(getString(R.string.claimMsg)).setPositiveButton("OK", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     final NavController navController = Navigation.findNavController(view);

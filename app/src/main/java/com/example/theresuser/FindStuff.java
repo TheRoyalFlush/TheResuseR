@@ -46,6 +46,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -86,6 +87,7 @@ public class FindStuff extends Fragment implements OnMapReadyCallback {
     ListViewCustomAdapter adapter;
     AlertDialog alertDialog;
     List<Integer> postId;
+    Context con;
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     @Override
@@ -94,28 +96,28 @@ public class FindStuff extends Fragment implements OnMapReadyCallback {
         view = inflater.inflate(R.layout.fragment_find_stuff, container, false);
         setHasOptionsMenu(true);
 
-        LocationManager locationManager = (LocationManager)getActivity().getSystemService(Context.LOCATION_SERVICE);
+        LocationManager locationManager = (LocationManager)con.getSystemService(Context.LOCATION_SERVICE);
         if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-            Toast.makeText(getActivity(), "Please enable location services before proceeding", Toast.LENGTH_LONG).show();
+            Toast.makeText(con, "Please enable location services before proceeding", Toast.LENGTH_LONG).show();
             startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
         }
 
         final SupportMapFragment mapFragment = (SupportMapFragment)getChildFragmentManager().findFragmentById(R.id.mapView);
         mapFragment.getMapAsync(this);
 
-        geoDataClient = Places.getGeoDataClient(getActivity(),null);
-        placeDetectionClient = Places.getPlaceDetectionClient(getActivity(),null);
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getActivity());
+        geoDataClient = Places.getGeoDataClient(con,null);
+        placeDetectionClient = Places.getPlaceDetectionClient(con,null);
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(con);
 
-        itemListView = new ListView(getActivity());
+        itemListView = new ListView(con);
         currentItemsList = new ArrayList<String[]>();
 
-        adapter = new ListViewCustomAdapter(getActivity(),R.layout.custom_list_view, (ArrayList<String[]>) currentItemsList);
+        adapter = new ListViewCustomAdapter(con,R.layout.custom_list_view, (ArrayList<String[]>) currentItemsList);
         itemListView.setAdapter(adapter);
 
         //final NavController navController = Navigation.findNavController(view);
 
-        final AlertDialog.Builder builder =new AlertDialog.Builder(getActivity());
+        final AlertDialog.Builder builder =new AlertDialog.Builder(con);
         builder.setTitle("Items").setMessage("Please select an item.").setView(itemListView)
                 .setPositiveButton("Cancel", new DialogInterface.OnClickListener() {
                     @Override
@@ -128,7 +130,7 @@ public class FindStuff extends Fragment implements OnMapReadyCallback {
         itemListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View viw, int position, long id) {
-                GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(getActivity());
+                GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(con);
                 if (account == null) {
                     alertDialog.cancel();
                     final NavController navController = Navigation.findNavController(view);
@@ -139,7 +141,7 @@ public class FindStuff extends Fragment implements OnMapReadyCallback {
                     for (int i = 0; i <= markerArray.length() - 1; i++) {
                         try {
                             if (Integer.valueOf(markerArray.getJSONObject(i).getString("post_id")) == postId.get(position)) {
-                                SharedPreferences sharedPreferences = getActivity().getSharedPreferences("claim_data", Context.MODE_PRIVATE);
+                                SharedPreferences sharedPreferences = con.getSharedPreferences("claim_data", Context.MODE_PRIVATE);
                                 SharedPreferences.Editor editor = sharedPreferences.edit();
                                 editor.putString("item_content", String.valueOf(markerArray.getJSONObject(i)));
                                 editor.apply();
@@ -159,6 +161,13 @@ public class FindStuff extends Fragment implements OnMapReadyCallback {
         return view;
     }
 
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        con = context;
+
+    }
+    
     //Calling the map to initialize when the activity is launched
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
@@ -175,7 +184,7 @@ public class FindStuff extends Fragment implements OnMapReadyCallback {
                 if(!marker.getTitle().equals("Your Location")) {
                     if (markerArray != null) {
 
-                        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("Marker_Data",Context.MODE_PRIVATE);
+                        SharedPreferences sharedPreferences = con.getSharedPreferences("Marker_Data",Context.MODE_PRIVATE);
                         SharedPreferences.Editor editor = sharedPreferences.edit();
 
                         ArrayList<String> mArray = (ArrayList<String>) marker.getTag();
@@ -244,7 +253,7 @@ public class FindStuff extends Fragment implements OnMapReadyCallback {
     //Handelling permissions for the application to get the users location services
     @RequiresApi(api = Build.VERSION_CODES.M)
     public void permissionHandller(){
-        if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
+        if (ContextCompat.checkSelfPermission(con, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
             permission = true;
             updateLocationUI();
         }
@@ -293,7 +302,7 @@ public class FindStuff extends Fragment implements OnMapReadyCallback {
                                         new LatLng(lastLocation.getLatitude(),
                                                 lastLocation.getLongitude()), 12));
                                 mMap.addMarker(new MarkerOptions().position(new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude())).title("Your Location").draggable(true)).showInfoWindow();
-                                SharedPreferences sharedPreferences = getActivity().getSharedPreferences("claim_data", Context.MODE_PRIVATE);
+                                SharedPreferences sharedPreferences = con.getSharedPreferences("claim_data", Context.MODE_PRIVATE);
                                 SharedPreferences.Editor editor = sharedPreferences.edit();
                                 editor.putString("user_latitude", String.valueOf(lastLocation.getLatitude()));
                                 editor.putString("user_longitude", String.valueOf(lastLocation.getLongitude()));
@@ -301,7 +310,7 @@ public class FindStuff extends Fragment implements OnMapReadyCallback {
 
                                 Geocoder geocoder;
                                 List<Address> addressList;
-                                geocoder = new Geocoder(getActivity(), Locale.getDefault());
+                                geocoder = new Geocoder(con, Locale.getDefault());
 
                                 try {
                                     addressList = geocoder.getFromLocation(lastLocation.getLatitude(),lastLocation.getLongitude(), 1);
@@ -314,7 +323,7 @@ public class FindStuff extends Fragment implements OnMapReadyCallback {
                             }
                             else {
                                 updateLocationUI();
-                                //Toast.makeText(getActivity(),"Check you Location Settings",Toast.LENGTH_LONG).show();
+                                //Toast.makeText(con,"Check you Location Settings",Toast.LENGTH_LONG).show();
                             }
                         } else {
                             //mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mDefaultLocation, 20));
@@ -340,11 +349,11 @@ public class FindStuff extends Fragment implements OnMapReadyCallback {
                 System.out.println(typeList);
                 if (!nameList.contains(query.toLowerCase()) && !typeList.contains(query.toLowerCase())){
                     System.out.println("query no");
-                    Toast.makeText(getActivity(),"No Items Found",Toast.LENGTH_LONG).show();
+                    Toast.makeText(con,"No Items Found",Toast.LENGTH_LONG).show();
                     return false;
                 }
                 System.out.println("query yes");
-                Toast.makeText(getActivity(),"Zoom out to look for items.",Toast.LENGTH_LONG).show();
+                Toast.makeText(con,"Zoom out to look for items.",Toast.LENGTH_LONG).show();
                 queryFlag = true;
                 queryString = query;
                 PopulateMap populateMap = new PopulateMap();
@@ -368,7 +377,7 @@ public class FindStuff extends Fragment implements OnMapReadyCallback {
     public class PopulateMap extends AsyncTask<String,Void,String>{
         @Override
         protected String doInBackground(String... strings) {
-            //SharedPreferences sharedPreferences = getActivity().getSharedPreferences("populate_maps",Context.MODE_PRIVATE);
+            //SharedPreferences sharedPreferences = con.getSharedPreferences("populate_maps",Context.MODE_PRIVATE);
             //SharedPreferences.Editor edit = sharedPreferences.edit();
             //edit.putInt("launch",1);
             //edit.apply();

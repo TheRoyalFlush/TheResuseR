@@ -1,18 +1,35 @@
 package com.example.theresuser;
 
 
+import android.app.AlarmManager;
+import android.app.Dialog;
+import android.app.PendingIntent;
+import android.app.TimePickerDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.os.AsyncTask;
 import android.os.Bundle;
 
+import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 
+import android.os.SystemClock;
+import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Switch;
+import android.widget.TextView;
+import android.widget.TimePicker;
+import android.widget.Toast;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.Calendar;
 import java.util.Locale;
 
 
@@ -21,9 +38,10 @@ import java.util.Locale;
  */
 public class Settings extends Fragment {
 
-    Switch english,chinese;
+    Switch english,chinese,reminder;
     View view;
     SharedPreferences sharedPreferences;
+    TextView reminderTextView,setTime;
 
     public Settings() {
         // Required empty public constructor
@@ -40,8 +58,11 @@ public class Settings extends Fragment {
         sharedPreferences = getActivity().getSharedPreferences("Language", Context.MODE_PRIVATE);
         final SharedPreferences.Editor editor = sharedPreferences.edit();
 
+        reminderTextView = (TextView)view.findViewById(R.id.reminderTime);
+        setTime =  (TextView)view.findViewById(R.id.setTime);
         english = (Switch)view.findViewById(R.id.english);
         chinese = (Switch)view.findViewById(R.id.chinese);
+        reminder = (Switch)view.findViewById(R.id.reminder);
 
         String language = sharedPreferences.getString("language",null);
         if (language != null) {
@@ -89,7 +110,93 @@ public class Settings extends Fragment {
             }
         });
 
+        reminder.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(reminder.isChecked()){
+                    reminderTextView.setVisibility(View.VISIBLE);
+                    setTime.setVisibility(View.VISIBLE);
+                }
+                else{
+                    reminderTextView.setVisibility(View.INVISIBLE);
+                    setTime.setVisibility(View.INVISIBLE);
+                }
+            }
+        });
+
+        reminderTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (reminder.isChecked()){
+                    Toast.makeText(getActivity(),getString(R.string.alarmMsg),Toast.LENGTH_LONG).show();
+                    DialogFragment newFragment = new TimePickerFragment();
+                    newFragment.show(getActivity().getSupportFragmentManager(), "timePicker");
+                }
+            }
+        });
+
+        ReminderDay reminderDay = new ReminderDay();
+        reminderDay.execute();
+
         return view;
+    }
+
+    public static class TimePickerFragment extends DialogFragment
+            implements TimePickerDialog.OnTimeSetListener {
+
+        AlarmManager alarmManager;
+        Intent intent;
+        PendingIntent pendingIntent;
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            // Use the current time as the default values for the picker
+            final Calendar c = Calendar.getInstance();
+            int hour = c.get(Calendar.HOUR_OF_DAY);
+            int minute = c.get(Calendar.MINUTE);
+
+            // Create a new instance of TimePickerDialog and return it
+            return new TimePickerDialog(getActivity(), this, hour, minute,
+                    DateFormat.is24HourFormat(getActivity()));
+        }
+
+        public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+            SharedPreferences sharedPreferences = getActivity().getSharedPreferences("reminder",Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putInt("hour",hourOfDay);
+            editor.putInt("minute",minute);
+            editor.apply();
+            alarmManager = (AlarmManager)getActivity().getSystemService(Context.ALARM_SERVICE);
+            intent = new Intent(getActivity(),SheduleIntentService.class);
+            pendingIntent = PendingIntent.getService(getActivity(),0,intent,0);
+            alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime(),
+                    AlarmManager.INTERVAL_DAY*7,pendingIntent);
+
+        }
+    }
+
+    public class ReminderDay extends AsyncTask<String, Void, String> {
+        @Override
+        protected String doInBackground(String... strings) {
+            SharedPreferences sharedPreferences = getActivity().getSharedPreferences("claim_data",Context.MODE_PRIVATE);
+            String latitude = sharedPreferences.getString("user_latitude",null);
+            String longitude = sharedPreferences.getString("user_longitude",null);
+            String sendData = "{\"latitude\":"+latitude+",\"longitude\":"+longitude+"}";
+            return AsyncTaskData.reminderDay(sendData);
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            try {
+                JSONObject dayArray = new JSONObject(s);
+                String day = dayArray.getString("day");
+                SharedPreferences sharedPreferences = getActivity().getSharedPreferences("reminder",Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putString(day,null);
+                editor.apply();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     public void changeLang(String lang){

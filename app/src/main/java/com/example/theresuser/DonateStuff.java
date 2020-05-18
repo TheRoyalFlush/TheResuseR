@@ -141,66 +141,69 @@ public class DonateStuff extends Fragment {
         proceed.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final NavController navController = Navigation.findNavController(view);
-                GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(con);
-                if (account == null){
-                    navController.navigate(R.id.action_donateStuff_to_login);
-                }
-                else {
-                    if (edit) {
-                        Toast.makeText(con, "Please save the item before proceeding.", Toast.LENGTH_LONG).show();
+                if (currentItemsList.size() == 0) {
+                    Toast.makeText(getActivity(), getString(R.string.noitem), Toast.LENGTH_LONG).show();
+                } else {
+                    final NavController navController = Navigation.findNavController(view);
+                    GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(con);
+                    if (account == null) {
+                        navController.navigate(R.id.action_donateStuff_to_login);
                     } else {
-                        try {
-                            SharedPreferences sharedPreferences = con.getSharedPreferences("post_data", Context.MODE_PRIVATE);
-                            float latitude = sharedPreferences.getFloat("latitude", 0);
-                            float longitude = sharedPreferences.getFloat("longitude", 0);
-                            int postId = sharedPreferences.getInt("post_id", 0);
-                            int itemId = 0;
-                            int colorId = 0;
-                            int yearId = 0;
-                            int count = 0;
-                            for (int i = 0; i <= currentItemsList.size() - 1; i++) {
-                                for (int j = 0; j <= itemArray.length() - 1; j++) {
-                                    if (currentItemsList.get(i)[0].equals(itemArray.getJSONObject(j).getString("item_name"))) {
-                                        itemId = Integer.parseInt(itemArray.getJSONObject(j).getString("item_id"));
+                        if (edit) {
+                            Toast.makeText(con, getString(R.string.save), Toast.LENGTH_LONG).show();
+                        } else {
+                            try {
+                                SharedPreferences sharedPreferences = con.getSharedPreferences("post_data", Context.MODE_PRIVATE);
+                                float latitude = sharedPreferences.getFloat("latitude", 0);
+                                float longitude = sharedPreferences.getFloat("longitude", 0);
+                                int postId = sharedPreferences.getInt("post_id", 0);
+                                int itemId = 0;
+                                int colorId = 0;
+                                int yearId = 0;
+                                int count = 0;
+                                for (int i = 0; i <= currentItemsList.size() - 1; i++) {
+                                    for (int j = 0; j <= itemArray.length() - 1; j++) {
+                                        if (currentItemsList.get(i)[0].equals(itemArray.getJSONObject(j).getString("item_name"))) {
+                                            itemId = Integer.parseInt(itemArray.getJSONObject(j).getString("item_id"));
 
+                                        }
                                     }
-                                }
-                                for (int j = 0; j <= colorArray.length() - 1; j++) {
-                                    if (currentItemsList.get(i)[1].equals(colorArray.getJSONObject(j).getString("color_name"))) {
-                                        colorId = Integer.parseInt(colorArray.getJSONObject(j).getString("color_id"));
+                                    for (int j = 0; j <= colorArray.length() - 1; j++) {
+                                        if (currentItemsList.get(i)[1].equals(colorArray.getJSONObject(j).getString("color_name"))) {
+                                            colorId = Integer.parseInt(colorArray.getJSONObject(j).getString("color_id"));
+                                        }
                                     }
-                                }
-                                for (int j = 0; j <= yearArray.length() - 1; j++) {
-                                    if (currentItemsList.get(i)[2].equals(yearArray.getJSONObject(j).getString("year_range"))) {
-                                        yearId = Integer.parseInt(yearArray.getJSONObject(j).getString("year_id"));
+                                    for (int j = 0; j <= yearArray.length() - 1; j++) {
+                                        if (currentItemsList.get(i)[2].equals(yearArray.getJSONObject(j).getString("year_range"))) {
+                                            yearId = Integer.parseInt(yearArray.getJSONObject(j).getString("year_id"));
+                                        }
                                     }
+                                    if (count > 0) {
+                                        postId = postId + 1;
+                                    }
+                                    itemObject = new Item(postId, colorId, itemId, yearId, latitude, longitude);
+                                    postIdList.add(postId);
+                                    count = count + 1;
+                                    Gson gson = new GsonBuilder().create();
+                                    String stringJson = gson.toJson(itemObject);
+                                    System.out.println(stringJson);
+                                    if (i != currentItemsList.size() - 1) {
+                                        finalArray = finalArray + stringJson + ",";
+                                    } else {
+                                        finalArray = finalArray + stringJson;
+                                    }
+                                    JSONObject newObject = new JSONObject(stringJson);
+                                    finalPostArray.put(newObject);
                                 }
-                                if (count > 0) {
-                                    postId = postId + 1;
-                                }
-                                itemObject = new Item(postId, colorId, itemId, yearId, latitude, longitude);
-                                postIdList.add(postId);
-                                count = count + 1;
-                                Gson gson = new GsonBuilder().create();
-                                String stringJson = gson.toJson(itemObject);
-                                System.out.println(stringJson);
-                                if (i != currentItemsList.size() - 1) {
-                                    finalArray = finalArray + stringJson + ",";
-                                } else {
-                                    finalArray = finalArray + stringJson;
-                                }
-                                JSONObject newObject = new JSONObject(stringJson);
-                                finalPostArray.put(newObject);
+                            } catch (JSONException e) {
+                                e.printStackTrace();
                             }
-                        } catch (JSONException e) {
-                            e.printStackTrace();
+                            finalArray = "[" + finalArray + "]";
+                            SendDataAysnc sendDataAysnc = new SendDataAysnc();
+                            sendDataAysnc.execute();
+                            NavOptions navOptions = new NavOptions.Builder().setPopUpTo(R.id.findStuff, true).build();
+                            navController.navigate(R.id.action_donateStuff_to_locationConfirmation2, null, navOptions);
                         }
-                        finalArray = "[" + finalArray + "]";
-                        SendDataAysnc sendDataAysnc = new SendDataAysnc();
-                        sendDataAysnc.execute();
-                        NavOptions navOptions = new NavOptions.Builder().setPopUpTo(R.id.findStuff,true).build();
-                        navController.navigate(R.id.action_donateStuff_to_locationConfirmation2,null,navOptions);
                     }
                 }
             }

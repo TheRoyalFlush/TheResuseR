@@ -35,7 +35,7 @@
 
 
         <Switch
-            android:id="@+id/switch1"
+            android:id="@+id/reminder"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -49,16 +49,20 @@
             android:id="@+id/time">
 
             <TextView
+                android:id="@+id/setTime"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Set Time:"
-                android:textSize="24dp"/>
+                android:text="Set Time:   "
+                android:textSize="24dp" />
 
             <TextView
                 android:id="@+id/reminderTime"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:gravity="end" />
+                android:gravity="end"
+                android:textSize="24dp"
+                android:text="Time"
+                android:background="@layout/border_layout"/>
         </LinearLayout>
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
