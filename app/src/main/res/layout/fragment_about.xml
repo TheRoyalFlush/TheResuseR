@@ -6,14 +6,22 @@
     android:layout_height="match_parent"
     tools:context=".About">
 
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
     <LinearLayout
         android:id="@+id/stats"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        android:orientation="vertical">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -34,7 +42,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:padding="7sp"
-                android:text="Items reused by Resusers"
+                android:text="@string/item_reduced"
                 android:textSize="15sp" />
         </LinearLayout>
 
@@ -58,7 +66,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:padding="7sp"
-                android:text="Trees planted"
+                android:text="@string/trees_planted"
                 android:textSize="15sp" />
         </LinearLayout>
     </LinearLayout>
@@ -70,9 +78,7 @@
         android:layout_below="@+id/stats"
         android:orientation="horizontal"
         android:padding="10sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/stats">
+        >
 
         <ImageView
             android:id="@+id/imageView1"
@@ -152,17 +158,19 @@
         android:layout_marginTop="24dp"
         android:background="@layout/border_layout"
         android:orientation="vertical"
-        app:layout_constraintTop_toBottomOf="@+id/frame">
+        android:layout_below="@+id/frame">
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_margin="15sp"
             android:layout_marginLeft="10sp"
             android:text="@string/about_the_resuser" />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_margin="15sp"
             android:layout_marginLeft="10sp"
             android:layout_marginRight="10sp"
             android:text="@string/aboutUs" />
@@ -173,20 +181,28 @@
         android:layout_height="wrap_content"
         android:background="@layout/border_layout"
         android:orientation="vertical"
-        app:layout_constraintTop_toBottomOf="@+id/l1">
+        android:layout_below="@+id/l1"
+        android:layout_marginTop="10sp">
 
         <TextView
+            android:id="@+id/monash"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_margin="15sp"
             android:layout_marginLeft="10sp"
             android:layout_marginRight="10sp"
-            android:text="@string/monash_council" />
+            android:text="@string/monash_council"
+            android:textColor="@color/debug_blue" />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_margin="15sp"
             android:layout_marginLeft="10sp"
             android:layout_marginRight="10sp"
             android:text="@string/monashFact" />
     </LinearLayout>
+
+    </RelativeLayout>
+    </ScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>

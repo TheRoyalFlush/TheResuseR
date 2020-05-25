@@ -20,6 +20,7 @@ import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.TimePicker;
@@ -43,7 +44,8 @@ public class Settings extends Fragment {
     Switch english,chinese,reminder;
     View view;
     SharedPreferences sharedPreferences;
-    TextView reminderTextView,setTime;
+    TextView binDay;
+    String day;
 
     public Settings() {
         // Required empty public constructor
@@ -62,6 +64,7 @@ public class Settings extends Fragment {
         final SharedPreferences.Editor editor = sharedPreferences.edit();
         english = (Switch)view.findViewById(R.id.english);
         chinese = (Switch)view.findViewById(R.id.chinese);
+        binDay = (TextView) view.findViewById(R.id.binday);
         System.out.println(language);
 //Checking the current language
         if (language != null) {
@@ -110,6 +113,18 @@ public class Settings extends Fragment {
                     editor.putString("language","english");
                     editor.apply();
                     changeLang("en");
+                }
+            }
+        });
+
+        binDay.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (day != null && !day.equals("")) {
+                    Toast.makeText(getActivity(), day + " " + getString(R.string.bin), Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    Toast.makeText(getActivity(),getString(R.string.not),Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -168,7 +183,7 @@ public class Settings extends Fragment {
             try {
                 JSONObject dayArray = new JSONObject(s);
                 if (dayArray.length() == 0) {
-                    String day = dayArray.getString("day");
+                    day = dayArray.getString("day");
                     SharedPreferences sharedPreferences = getActivity().getSharedPreferences("reminder", Context.MODE_PRIVATE);
                     SharedPreferences.Editor editor = sharedPreferences.edit();
                     editor.putString("day", day);

@@ -95,7 +95,7 @@ public class Dashboard extends Fragment {
        view = inflater.inflate(R.layout.fragment_dashboard, container, false);
         account = GoogleSignIn.getLastSignedInAccount(con);
         if (account == null){
-            Toast.makeText(con,"Sign In to your Google Account first.",Toast.LENGTH_LONG).show();
+            Toast.makeText(con,getString(R.string.signin),Toast.LENGTH_LONG).show();
             //navController.navigate(R.id.action_dashboard_to_login);
             GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                     .requestEmail()
@@ -111,11 +111,12 @@ public class Dashboard extends Fragment {
 
         SeekBar seekBar = (SeekBar)view.findViewById(R.id.seekBar);
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @SuppressLint("SetTextI18n")
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 if (progress >90){
                     TextView textView = (TextView)view.findViewById(R.id.contribution);
-                    textView.setText((int)(numKm)+" km not driven which would have produced "+(int)(ciWeight)+" kgs of CO2");
+                    textView.setText(getString(R.string.red)+" "+(int)(ciWeight)+" "+getString(R.string.kgreduced)+" "+(int)(numKm)+" "+getString(R.string.km));
                 }
             }
 
@@ -187,7 +188,7 @@ public class Dashboard extends Fragment {
         @Override
         protected String doInBackground(String... strings) {
             TextView username = (TextView)view.findViewById(R.id.username);
-            username.setText("Welcome "+account.getGivenName());
+            username.setText(getString(R.string.welcom)+" "+account.getGivenName());
             GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(con);
             String userEmail = "";
             if (account != null) {
@@ -253,10 +254,10 @@ public class Dashboard extends Fragment {
         List<String[]> topList = new ArrayList<>();
         for (int i = 0; i<= 2;i++){
             if (i == userRank - 1){
-                topList.add(new String[]{"","#"+(1+i)+"  YOU"});
+                topList.add(new String[]{"","#"+(1+i)+" "+account.getGivenName()});
             }
             else {
-                topList.add(new String[]{"","#"+(1+i)+"  Contributer"});
+                topList.add(new String[]{"","#"+(1+i)+" " +getString(R.string.contributer)});
             }
         }
         TopThreeClass adapter = new TopThreeClass(con,R.layout.leaderboard, (ArrayList<String[]>) topList){
@@ -282,9 +283,9 @@ public class Dashboard extends Fragment {
         ListView topThreeList = (ListView)view.findViewById(R.id.topThreeList);
         List<String[]> topList = new ArrayList<>();
         for (int i = 0; i<= 2;i++){
-            topList.add(new String[]{"#"+(1+i),"Contributer"});
+            topList.add(new String[]{"#"+(1+i)," "+getString(R.string.contribute)});
         }
-        topList.add(new String[]{"#"+userRank,"YOU"});
+        topList.add(new String[]{"#"+userRank," "+account.getGivenName()});
         TopThreeClass adapter = new TopThreeClass(con,R.layout.leaderboard, (ArrayList<String[]>) topList){
             @NonNull
             @Override
@@ -300,7 +301,7 @@ public class Dashboard extends Fragment {
                     view.setBackgroundColor(Color.parseColor("#d28c47"));
                 }
                 else if (position == 3){
-                    view.setBackgroundColor(Color.parseColor("#e8e4e1"));
+                    view.setBackgroundColor(Color.parseColor("#74d4c0"));
                 }
                 return view;
             }

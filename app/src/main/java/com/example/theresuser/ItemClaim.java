@@ -75,10 +75,10 @@ public class ItemClaim extends Fragment {
             color = jsonObject.getString("color_name");
             carbonIntensity = jsonObject.getString("carbon_intensity");
 
-            itemName.setText(name);
-            itemColor.setText(color);
-            itemType.setText(type);
-            itemYear.setText(year);
+            itemName.setText(" "+name);
+            itemColor.setText(" "+color);
+            itemType.setText(" "+type);
+            itemYear.setText(" "+year+" years old");
             totalCI = Float.parseFloat(carbonIntensity)*Float.valueOf(jsonObject.getString("kg"));
             carbonIntensityMessage.setText(name+" "+getString(R.string.contains)+" "+totalCI+" "+getString(R.string.CImsg));
 

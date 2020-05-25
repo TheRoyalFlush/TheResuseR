@@ -64,16 +64,24 @@
                     android:layout_marginTop="5sp"
                     android:gravity="center"
                     android:padding="3sp"
-                    android:text="Slide to reveal your contribution" />
+                    android:text="@string/slide" />
             </RelativeLayout>
+
+            <TextView
+                android:id="@+id/con"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/relative"
+                android:layout_marginTop="10dp"
+                android:text="@string/community" />
 
 
             <ListView
                 android:id="@+id/topThreeList"
                 android:layout_width="match_parent"
                 android:layout_height="300dp"
-                android:layout_below="@+id/relative"
-                android:layout_marginTop="15sp"
+                android:layout_below="@+id/con"
+                android:layout_marginTop="5sp"
                 android:background="@layout/border_layout"
                 android:padding="15sp"
                 tools:layout_editor_absoluteX="8dp"

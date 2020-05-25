@@ -157,7 +157,7 @@ public class DonateStuff extends Fragment {
                             Toast.makeText(con, getString(R.string.save), Toast.LENGTH_LONG).show();
                         } else {
                             try {
-                                Toast.makeText(getActivity(),"Your items have been posted online for others to see.",Toast.LENGTH_LONG).show();
+                                Toast.makeText(getActivity(),getString(R.string.posted),Toast.LENGTH_LONG).show();
                                 SharedPreferences sharedPreferences = con.getSharedPreferences("post_data", Context.MODE_PRIVATE);
                                 float latitude = sharedPreferences.getFloat("latitude", 0);
                                 float longitude = sharedPreferences.getFloat("longitude", 0);
@@ -206,7 +206,7 @@ public class DonateStuff extends Fragment {
                             finalArray = "[" + finalArray + "]";
                             SendDataAysnc sendDataAysnc = new SendDataAysnc();
                             sendDataAysnc.execute();
-                            Toast.makeText(getActivity(),"Thank You for your donation towards a greener planet",Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getActivity(),getString(R.string.greener),Toast.LENGTH_SHORT).show();
                             NavOptions navOptions = new NavOptions.Builder().setPopUpTo(R.id.findStuff, true).build();
                             navController.navigate(R.id.action_donateStuff_to_locationConfirmation2, null, navOptions);
                         }

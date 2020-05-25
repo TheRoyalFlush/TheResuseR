@@ -101,7 +101,7 @@ public class FindStuff extends Fragment implements OnMapReadyCallback {
 
         LocationManager locationManager = (LocationManager)con.getSystemService(Context.LOCATION_SERVICE);
         if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-            Toast.makeText(con, "Please enable location services before proceeding", Toast.LENGTH_LONG).show();
+            Toast.makeText(con, getString(R.string.location), Toast.LENGTH_LONG).show();
             startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
         }
 
@@ -202,7 +202,6 @@ public class FindStuff extends Fragment implements OnMapReadyCallback {
 
                             try {
                                 if (mArray.contains(markerArray.getJSONObject(i).getString("post_id"))) {
-                                    System.out.println("yes");
                                     postId.add(Integer.valueOf(markerArray.getJSONObject(i).getString("post_id")));
                                     currentItemsList.add(new String[]{markerArray.getJSONObject(i).getString("item_name"),
                                             markerArray.getJSONObject(i).getString("color_name"),
@@ -346,18 +345,18 @@ public class FindStuff extends Fragment implements OnMapReadyCallback {
         inflater.inflate(R.menu.search_menu,menu);
         MenuItem menuItem = menu.findItem(R.id.searchMenu);
         final SearchView searchView = (SearchView)menuItem.getActionView();
-        searchView.setQueryHint("Search for item or type.");
+        searchView.setQueryHint(getString(R.string.search));
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
                 System.out.println(typeList);
                 if (!nameList.contains(query.toLowerCase()) && !typeList.contains(query.toLowerCase())){
                     System.out.println("query no");
-                    Toast.makeText(con,"No Items Found",Toast.LENGTH_LONG).show();
+                    Toast.makeText(con,getString(R.string.no_item),Toast.LENGTH_LONG).show();
                     return false;
                 }
                 System.out.println("query yes");
-                Toast.makeText(con,"Zoom out to look for items.",Toast.LENGTH_LONG).show();
+                Toast.makeText(con,getString(R.string.zoom),Toast.LENGTH_LONG).show();
                 queryFlag = true;
                 queryString = query;
                 PopulateMap populateMap = new PopulateMap();

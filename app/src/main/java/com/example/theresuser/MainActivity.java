@@ -43,6 +43,7 @@ public class MainActivity extends AppCompatActivity  {
     Resources resources;
     BottomNavigationView bottomNavigationView;
     ImageView screen;
+    TextView msg;
     int count;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,7 +62,7 @@ public class MainActivity extends AppCompatActivity  {
         getSupportActionBar().setDisplayShowTitleEnabled(false);
         toolbar.setBackgroundColor(Color.parseColor("#f3f9fb"));
 
-        showSplash();
+        //showSplash();
         ImageView home = (ImageView)findViewById(R.id.home);
 
         bottomNavigationView = (BottomNavigationView)findViewById(R.id.bottomNavigationView);
@@ -97,7 +98,9 @@ public class MainActivity extends AppCompatActivity  {
         count = 1;
         System.out.println("splash");
         screen.setImageResource(R.drawable.one);
+        next.setVisibility(View.VISIBLE);
         previous.setVisibility(View.INVISIBLE);
+        msg = (TextView)dialog.findViewById(R.id.msg);
 
         close.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -109,6 +112,7 @@ public class MainActivity extends AppCompatActivity  {
         previous.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                next.setVisibility(View.VISIBLE);
                 if (count !=1){
                     count -= count;}
                 if (count == 1){
@@ -116,6 +120,27 @@ public class MainActivity extends AppCompatActivity  {
                 }
                 if (count == 1){
                     screen.setImageResource(R.drawable.one);
+                    msg.setText("Select location where your items are located on the kerb.");
+                }
+                if (count == 2){
+                    screen.setImageResource(R.drawable.two);
+                    msg.setText("Add details of the items plcaed on the kerb. \n Press Add More to addmore items into the list.\nPress post to let your community know about the listed items.");
+                }
+                if (count == 3){
+                    screen.setImageResource(R.drawable.three);
+                    msg.setText("Locate items around you to look for items to reuse.");
+                }
+                if (count == 4){
+                    screen.setImageResource(R.drawable.four);
+                    msg.setText("Know your contribution towards a greener earth.");
+                }
+                if (count == 5){
+                    screen.setImageResource(R.drawable.five);
+                    msg.setText("Seamlessly switch between English and Chinese language");
+                }
+                if (count == 6){
+                    screen.setImageResource(R.drawable.six);
+                    msg.setText("Learn More about the application and Monash council.");
                 }
             }
         });
@@ -124,11 +149,35 @@ public class MainActivity extends AppCompatActivity  {
             @Override
             public void onClick(View v) {
                 previous.setVisibility(View.VISIBLE);
-                if (count != 4) {
+                if (count != 6) {
                     count += 1;
                 }
                 if(count == 4){
                     next.setVisibility(View.INVISIBLE);
+                }
+                if (count == 1){
+                    screen.setImageResource(R.drawable.one);
+                    msg.setText("Select location where your items are located on the kerb.");
+                }
+                if (count == 2){
+                    screen.setImageResource(R.drawable.two);
+                    msg.setText("Add details of the items plcaed on the kerb. \n Press Add More to addmore items into the list.\nPress post to let your community know about the listed items.");
+                }
+                if (count == 3){
+                    screen.setImageResource(R.drawable.three);
+                    msg.setText("Locate items around you to look for items to reuse.");
+                }
+                if (count == 4){
+                    screen.setImageResource(R.drawable.four);
+                    msg.setText("Know your contribution towards a greener earth.");
+                }
+                if (count == 5){
+                    screen.setImageResource(R.drawable.five);
+                    msg.setText("Seamlessly switch between English and Chinese language");
+                }
+                if (count == 6){
+                    screen.setImageResource(R.drawable.six);
+                    msg.setText("Learn More about the application and Monash council.");
                 }
             }
         });

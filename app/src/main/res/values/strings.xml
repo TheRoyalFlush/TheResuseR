@@ -6,8 +6,8 @@
     <string name="title_activity_item_claim" translatable="false">ItemClaim</string>
     <string name="title_activity_post_data_review" translatable="false">PostDataReview</string>
     <string name="hello_blank_fragment" translatable="false">Hello blank fragment</string>
-    <string name="lineCHartMessage">Your contribution in reducing the carbon intensity(amount of CO2 in kg per kg of the item) of the items that you have Redused by Reusing.</string>
-    <string name="select_item_to_donate">Select Item You Want To Donate</string>
+    <string name="lineCHartMessage">Your contribution in reducing the carbon intensity(kg of CO2 produced from per kg of item) of the items that you have Redused by Reusing.</string>
+    <string name="select_item_to_donate">Select Item You Want To Post</string>
     <string name="item">ITEM</string>
     <string name="color">COLOR</string>
     <string name="years_old">YEARS OLD</string>
@@ -27,7 +27,7 @@
     <string name="about">About</string>
     <string name="dashboard">Dashboard</string>
     <string name="find">Find</string>
-    <string name="donate">Donate</string>
+    <string name="donate">Post</string>
     <string name="previous" translatable="false"><![CDATA[<]]></string>
     <string name="next" translatable="false"><![CDATA[>]]></string>
     <string name="welcome">Welcome </string>
@@ -35,7 +35,7 @@
     <string name="itemClaim">Item Claimed!!</string>
     <string name="claimMsg">The item has been claimed by you.</string>
     <string name="contains">contains</string>
-    <string name="CImsg">carbon intensity(amount of CO2 in kg per kg of the item). Thank you! for reducing that from going into atmosphere by picking the item for reuse through Resuser</string>
+    <string name="CImsg">carbon intensity(kg of CO2 produced from per kg of item). Thank you! for reducing Carbon from going into our atmosphere by picking the item for reuse through Resuser.</string>
     <string name="markerHold">Hold your location marker to move it.</string>
     <string name="SignInMsg">Please enable location services before proceeding</string>
     <string name="MarkerKerb">Move the marker to the location of your kerb.</string>
@@ -45,17 +45,17 @@
     <string name="reusinglessthanone">Reusing this item is equivalent to planting almost 1 tree.</string>
     <string name="reusing">Reusing this item is equivalent to planting</string>
     <string name="reusingtrees">trees.</string>
-    <string name="aboutUs">ResUseR is a bridging platform(initially open to only Monash City Council residents) between the hard waste disposer and seeker. Its chief intention is the advocacy for a greener earth. This objective is achieved in two-fold:
-1. Increasing hard waste reuse through the network of local residents before ending up in the landfill; thereby providing people with the means to contribute to the community and offering Melbournians with a means of accessing items that are still in good condition.
-2. Promoting awareness on the importance of reusing hard waste through informatics and multilingual support”.</string>
+    <string name="aboutUs">ResUseR is a bridging platform(initially open to only Monash City Council residents) between the hard waste disposer and seeker. Its chief intention is the advocacy for a greener earth. This objective is achieved in two-fold:\n
+1. Increasing hard waste reuse through the network of local residents before ending up in the landfill; thereby providing people with the means to contribute to the community and offering Melbournians with a means of accessing items that are still in good condition.\n
+2. Promoting awareness on the importance of reusing hard waste through informatics and multilingual support.</string>
     <string name="about_the_resuser" translatable="false">About The ResuseR</string>
     <string name="monash_council">Monash Council</string>
-    <string name="monashFact">The city of Monash is one of the most culturally rich councils in Melbourne, according to ABS’ (Australian Bureau of Statistics) 2016 census. Home to almost 90,000 residents who were born overseas, this accounts for almost 49% of the population who are now calling Monash their new home.
-Immigrants from an assortment of backgrounds (12.5% from China, 5.3% from India, 3.6% from Sri Lanka and more). In 2016, Monash City council collected 5,030 tonnes of hard waste (with only a 20% diversion rate), which required $1,030,000 in expenditure for its proper management. ResUseR believes in giving a second life to household reusables at the kerbside</string>
+    <string name="monashFact">The city of Monash is one of the most culturally rich councils in Melbourne, according to ABS’ (Australian Bureau of Statistics) 2016 census. Home to almost 90,000 residents who were born overseas, this accounts for almost 49% of the population who are now calling Monash their new home.\n
+Immigrants from an assortment of backgrounds (12.5% from China, 5.3% from India, 3.6% from Sri Lanka and more). In 2016, Monash City council collected 5,030 tonnes of hard waste (with only a 20% diversion rate), which required $1,030,000 in expenditure for its proper management. ResUseR believes in giving a second life to household reusables at the kerbside.</string>
     <string name="neartheitem">You need to be within 50 meters of the item to claim it.</string>
     <string name="noitem">No Items found. Add items to post.</string>
     <string name="save">Please save the item before proceeding.</string>
-    <string name="selectitem">Select Item You Want To Donate</string>
+    <string name="selectitem">Select Item You Want To Post</string>
     <string name="edit">Edit Item Details</string>
     <string name="save1">Save</string>
     <string name="eng">English</string>
@@ -63,4 +63,28 @@ Immigrants from an assortment of backgrounds (12.5% from China, 5.3% from India,
     <string name="reminder">Bin day reminder</string>
     <string name="set_time">Set Time:</string>
     <string name="t">Time</string>
+    <string name="contributer">Contributor</string>
+    <string name="you">YOU</string>
+    <string name="signin">Sign In to your Google Account first.</string>
+    <string name="km_driven">km not driven which would have produced </string>
+    <string name="co2">kgs of CO2</string>
+    <string name="welcom">Welcome </string>
+    <string name="contribute">Contributor</string>
+    <string name="greener">Thank You for your donation towards a greener planet</string>
+    <string name="posted">Your items have been posted online for others to see.</string>
+    <string name="location">Please enable location services before proceeding</string>
+    <string name="search">Search for item or type.</string>
+    <string name="no_item">No Items Found</string>
+    <string name="zoom">Zoom out to look for items.</string>
+    <string name="slide">Slide the car to reveal your contribution</string>
+    <string name="youu">YOU</string>
+    <string name="red">You have reduced</string>
+    <string name="kgreduced">kgs of CO2 from going into atmosphere which is equivalent to reducing CO2 by not driving for</string>
+    <string name="km">kms</string>
+    <string name="bin">is your garbage collection day. Make sure to keep your bin on the kerb.</string>
+    <string name="not">You are currently not in Monash City Council area.</string>
+    <string name="community">Our community\'s largest contributors.</string>
+    <string name="bin_day">Know your bin day.</string>
+    <string name="item_reduced">Items reused by Resusers</string>
+    <string name="trees_planted">Trees planted</string>
 </resources>
