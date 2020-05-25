@@ -114,6 +114,8 @@ public class DonateStuff extends Fragment {
             }
         });
 
+
+
         addMore.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -130,7 +132,7 @@ public class DonateStuff extends Fragment {
                                 colorArray.getJSONObject(colorSpinner.getSelectedItemPosition()).getString("color_name"),
                                 yearArray.getJSONObject(yearSpinner.getSelectedItemPosition()).getString("year_range")});
                         heading.setText(getString(R.string.selectitem));
-                        addMore.setText("ADD");
+                        addMore.setText("ADD MORE");
                         edit = false;
                         adapter.notifyDataSetChanged();
                     }
@@ -204,6 +206,7 @@ public class DonateStuff extends Fragment {
                             finalArray = "[" + finalArray + "]";
                             SendDataAysnc sendDataAysnc = new SendDataAysnc();
                             sendDataAysnc.execute();
+                            Toast.makeText(getActivity(),"Thank You for your donation towards a greener planet",Toast.LENGTH_SHORT).show();
                             NavOptions navOptions = new NavOptions.Builder().setPopUpTo(R.id.findStuff, true).build();
                             navController.navigate(R.id.action_donateStuff_to_locationConfirmation2, null, navOptions);
                         }

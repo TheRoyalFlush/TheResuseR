@@ -47,4 +47,9 @@
     <string name="selectitem">选择您要捐赠的物品</string>
     <string name="edit">"编辑项目详细信息 "</string>
     <string name="save1">"救 "</string>
+    <string name="eng">"英语 "</string>
+    <string name="chinese">中文</string>
+    <string name="reminder">"设置倾倒垃圾提醒 "</string>
+    <string name="set_time">置时间:</string>
+    <string name="t">"时间 "</string>
 </resources>

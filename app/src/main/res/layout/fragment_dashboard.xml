@@ -8,133 +8,77 @@
     tools:context=".Dashboard"
     >
 
-    <TextView
-        android:id="@+id/welcome"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/welcome"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <LinearLayout
-        android:id="@+id/liner"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/welcome"
-        android:orientation="vertical"
-        android:background="@layout/border_layout"
-        >
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Filter: Select Month"
-            android:id="@+id/filterTV"
-            android:textSize="18sp"/>
-
-    <Spinner
-        android:id="@+id/filterSpinnerLine"
-        android:layout_width="match_parent"
-        android:layout_height="20sp"
-        android:layout_below="@+id/filterTV"
-        />
-
-    </LinearLayout>
-
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_begin="110dp" />
-
     <ScrollView
-        android:layout_width="395dp"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:fillViewport="true"
-        android:layout_marginStart="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginBottom="8dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/guideline3">
+        app:layout_constraintTop_toTopOf="parent">
 
-        <LinearLayout
-            android:id="@+id/linearLyout"
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_height="wrap_content">
 
-            <RelativeLayout
-                android:id="@+id/relativeLyout"
+            <LinearLayout
+                android:id="@+id/ll"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@layout/border_layout">
-
-
-                <com.github.mikephil.charting.charts.LineChart
-                    android:id="@+id/lineChart"
-                    android:layout_width="match_parent"
-                    android:layout_height="247dp"
-                    android:fillViewport="true" />
+                android:layout_height="200dp"
+                android:background="#74d4c0">
 
                 <TextView
-                    android:id="@+id/info"
-                    android:layout_width="wrap_content"
-                    android:layout_height="75dp"
-                    android:layout_below="@+id/lineChart"
-                    android:layout_alignParentBottom="true"
-                    android:layout_marginTop="0dp"
-                    android:layout_marginBottom="0dp"
-                    android:text="@string/lineCHartMessage" />
-            </RelativeLayout>
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:id="@+id/username"
+                    android:textSize="40sp" />
+            </LinearLayout>
 
             <RelativeLayout
+                android:id="@+id/relative"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_below="@+id/ll"
+                android:layout_marginLeft="10sp"
+                android:layout_marginTop="17sp"
+                android:layout_marginRight="10sp"
                 android:background="@layout/border_layout">
 
-                <com.github.mikephil.charting.charts.HorizontalBarChart
-                    android:id="@+id/barChart"
+                <TextView
+                    android:id="@+id/contribution"
                     android:layout_width="match_parent"
-                    android:layout_height="247dp"
-                    android:fillViewport="true" />
+                    android:layout_height="wrap_content" />
+
+                <SeekBar
+                    android:id="@+id/seekBar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/contribution"
+                    android:layout_marginTop="5sp"
+                    android:progressDrawable="@android:color/transparent"
+                    android:thumb="@drawable/ford" />
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_below="@+id/barChart"
-                    android:text="@string/barMsg" />
+                    android:layout_below="@+id/seekBar"
+                    android:layout_marginTop="5sp"
+                    android:gravity="center"
+                    android:padding="3sp"
+                    android:text="Slide to reveal your contribution" />
             </RelativeLayout>
 
-            <RelativeLayout
+
+            <ListView
+                android:id="@+id/topThreeList"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@layout/border_layout">
-
-                <com.github.mikephil.charting.charts.PieChart
-                    android:id="@+id/pieChart"
-                    android:layout_width="396dp"
-                    android:layout_height="263dp" />
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@+id/pieChart"
-                    android:text="@string/pieMsg" />
-
-            </RelativeLayout>
-        </LinearLayout>
+                android:layout_height="300dp"
+                android:layout_below="@+id/relative"
+                android:layout_marginTop="15sp"
+                android:background="@layout/border_layout"
+                android:padding="15sp"
+                tools:layout_editor_absoluteX="8dp"
+                tools:layout_editor_absoluteY="300dp" />
+        </RelativeLayout>
     </ScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

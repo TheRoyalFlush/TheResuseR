@@ -8,14 +8,24 @@
     tools:context=".MainActivity">
 
     <androidx.appcompat.widget.Toolbar
-        android:background="#009688"
+        android:background="#74d4c0"
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        />
+        >
+
+        <ImageView
+            android:id="@+id/home"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="start"
+            android:src="@drawable/icon"
+            tools:layout_editor_absoluteX="16dp"
+            tools:layout_editor_absoluteY="19dp" />
+    </androidx.appcompat.widget.Toolbar>
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavigationView"

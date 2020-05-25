@@ -79,7 +79,7 @@ public class ItemClaim extends Fragment {
             itemColor.setText(color);
             itemType.setText(type);
             itemYear.setText(year);
-            totalCI = Float.parseFloat(carbonIntensity)*Integer.valueOf(jsonObject.getString("kg"));
+            totalCI = Float.parseFloat(carbonIntensity)*Float.valueOf(jsonObject.getString("kg"));
             carbonIntensityMessage.setText(name+" "+getString(R.string.contains)+" "+totalCI+" "+getString(R.string.CImsg));
 
         } catch (JSONException e) {

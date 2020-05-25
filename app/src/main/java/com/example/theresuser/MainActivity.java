@@ -10,6 +10,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -46,7 +47,7 @@ public class MainActivity extends AppCompatActivity  {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        SharedPreferences sharedPreferences = getSharedPreferences("Langiage",MODE_PRIVATE);
+        SharedPreferences sharedPreferences = getSharedPreferences("Language",MODE_PRIVATE);
         String lang = sharedPreferences.getString("language",null);
         if (lang != null){
             changeLanguage(lang);
@@ -57,13 +58,21 @@ public class MainActivity extends AppCompatActivity  {
 
         Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        toolbar.setBackgroundColor(Color.parseColor("#f3f9fb"));
 
         showSplash();
+        ImageView home = (ImageView)findViewById(R.id.home);
 
         bottomNavigationView = (BottomNavigationView)findViewById(R.id.bottomNavigationView);
-        NavController navController = Navigation.findNavController(this,R.id.nav_fragment);
+        final NavController navController = Navigation.findNavController(this,R.id.nav_fragment);
         NavigationUI.setupWithNavController(bottomNavigationView,navController);
 
+        home.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+            }
+        });
 
     }
 //Splash screen setup
@@ -108,15 +117,6 @@ public class MainActivity extends AppCompatActivity  {
                 if (count == 1){
                     screen.setImageResource(R.drawable.one);
                 }
-                if (count == 2){
-                    screen.setImageResource(R.drawable.two);
-                }
-                if (count == 3){
-                    screen.setImageResource(R.drawable.three);
-                }
-                if (count == 4){
-                    screen.setImageResource(R.drawable.four);
-                }
             }
         });
 
@@ -130,15 +130,6 @@ public class MainActivity extends AppCompatActivity  {
                 if(count == 4){
                     next.setVisibility(View.INVISIBLE);
                 }
-                if (count == 2){
-                    screen.setImageResource(R.drawable.two);
-                }
-                if (count == 3){
-                    screen.setImageResource(R.drawable.three);
-                }
-                if (count == 4){
-                    screen.setImageResource(R.drawable.four);
-                }
             }
         });
         dialog.show();
@@ -146,6 +137,12 @@ public class MainActivity extends AppCompatActivity  {
     }
 
     public void changeLanguage(String lang){
+        if (lang.equals("english")){
+            lang = "en";
+        }
+        else if (lang.equals("chinese")){
+            lang = "zh";
+        }
         Locale locale = new Locale(lang);
         Locale.setDefault(locale);
         Configuration configuration = new Configuration();

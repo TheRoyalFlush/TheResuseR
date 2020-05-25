@@ -10,59 +10,25 @@
         android:id="@+id/english"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="English"
+        android:text="@string/eng"
         android:textSize="30sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        android:thumbTint="#74d4c0"
+        android:trackTint="#74d4c0"/>
 
     <Switch
         android:id="@+id/chinese"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:text="Chinese"
+        android:text="@string/chinese"
         android:textSize="30sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/english" />
+        app:layout_constraintTop_toBottomOf="@+id/english"
+        android:thumbTint="#74d4c0"
+        android:trackTint="#74d4c0"/>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@+id/chinese"
-        android:orientation="vertical">
-
-
-        <Switch
-            android:id="@+id/reminder"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Set Garbage Bin reminder"
-            android:textSize="30sp" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal"
-            android:id="@+id/time">
-
-            <TextView
-                android:id="@+id/setTime"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Set Time:   "
-                android:textSize="24dp" />
-
-            <TextView
-                android:id="@+id/reminderTime"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="end"
-                android:textSize="24dp"
-                android:text="Time"
-                android:background="@layout/border_layout"/>
-        </LinearLayout>
-    </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

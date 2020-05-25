@@ -7,6 +7,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -23,12 +25,12 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.ScrollView;
-import android.widget.SearchView;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -62,6 +64,7 @@ import java.util.Set;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
+import androidx.appcompat.widget.SearchView;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
@@ -140,7 +143,7 @@ public class FindStuff extends Fragment implements OnMapReadyCallback {
                 if (postId != null && markerArray != null) {
                     for (int i = 0; i <= markerArray.length() - 1; i++) {
                         try {
-                            if (Integer.valueOf(markerArray.getJSONObject(i).getString("post_id")) == postId.get(position)) {
+                            if (Integer.valueOf(markerArray.getJSONObject(i).getString("post_id")).equals(postId.get(position))) {
                                 SharedPreferences sharedPreferences = con.getSharedPreferences("claim_data", Context.MODE_PRIVATE);
                                 SharedPreferences.Editor editor = sharedPreferences.edit();
                                 editor.putString("item_content", String.valueOf(markerArray.getJSONObject(i)));
@@ -343,6 +346,7 @@ public class FindStuff extends Fragment implements OnMapReadyCallback {
         inflater.inflate(R.menu.search_menu,menu);
         MenuItem menuItem = menu.findItem(R.id.searchMenu);
         final SearchView searchView = (SearchView)menuItem.getActionView();
+        searchView.setQueryHint("Search for item or type.");
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {

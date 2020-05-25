@@ -4,9 +4,8 @@
 
     <item
         android:id="@+id/searchMenu"
-        android:icon="@drawable/search"
+        android:icon="@drawable/new_search"
         android:title="Srach Item"
-        app:showAsAction="ifRoom|collapseActionView"
-        app:actionViewClass="android.widget.SearchView"
-        ></item>
+        app:actionViewClass="androidx.appcompat.widget.SearchView"
+        app:showAsAction="ifRoom|collapseActionView"></item>
 </menu>

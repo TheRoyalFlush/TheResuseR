@@ -25,14 +25,19 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Locale;
 
-//Settings scrren for the application
+//Settings screen for the application
 public class Settings extends Fragment {
 
     Switch english,chinese,reminder;
@@ -55,13 +60,9 @@ public class Settings extends Fragment {
         sharedPreferences = getActivity().getSharedPreferences("Language", Context.MODE_PRIVATE);
         String language = sharedPreferences.getString("language",null);
         final SharedPreferences.Editor editor = sharedPreferences.edit();
-
-        reminderTextView = (TextView)view.findViewById(R.id.reminderTime);
-        setTime =  (TextView)view.findViewById(R.id.setTime);
         english = (Switch)view.findViewById(R.id.english);
         chinese = (Switch)view.findViewById(R.id.chinese);
-        reminder = (Switch)view.findViewById(R.id.reminder);
-
+        System.out.println(language);
 //Checking the current language
         if (language != null) {
             if (language.equals("english")){
@@ -70,6 +71,11 @@ public class Settings extends Fragment {
             if (language.equals("chinese")){
                 chinese.setChecked(true);
             }
+        }
+        else {
+            editor.putString("language","english");
+            editor.apply();
+            english.setChecked(true);
         }
         english.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -108,34 +114,6 @@ public class Settings extends Fragment {
             }
         });
 
-        reminder.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(reminder.isChecked()){
-                    reminderTextView.setVisibility(View.VISIBLE);
-                    setTime.setVisibility(View.VISIBLE);
-                }
-                else{
-                    reminderTextView.setVisibility(View.INVISIBLE);
-                    setTime.setVisibility(View.INVISIBLE);
-                }
-            }
-        });
-
-        reminderTextView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (reminder.isChecked()){
-                    Toast.makeText(getActivity(),getString(R.string.alarmMsg),Toast.LENGTH_LONG).show();
-                    DialogFragment newFragment = new TimePickerFragment();
-                    newFragment.show(getActivity().getSupportFragmentManager(), "timePicker");
-                }
-            }
-        });
-
-        ReminderDay reminderDay = new ReminderDay();
-        reminderDay.execute();
-
         return view;
     }
 //Adding intent for the reminder
@@ -168,7 +146,7 @@ public class Settings extends Fragment {
             alarmManager = (AlarmManager)getActivity().getSystemService(Context.ALARM_SERVICE);
             intent = new Intent(getActivity(),SheduleIntentService.class);
             pendingIntent = PendingIntent.getService(getActivity(),0,intent,0);
-            alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime(),
+            alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, (hourOfDay*60*60*60)+(minute*60*60),
                     AlarmManager.INTERVAL_DAY*7,pendingIntent);
             Toast.makeText(getActivity(),"Your reminder has been set for "+day+" at "+hourOfDay+":"+minute,Toast.LENGTH_LONG).show();
 
@@ -189,11 +167,22 @@ public class Settings extends Fragment {
         protected void onPostExecute(String s) {
             try {
                 JSONObject dayArray = new JSONObject(s);
-                String day = dayArray.getString("day");
-                SharedPreferences sharedPreferences = getActivity().getSharedPreferences("reminder",Context.MODE_PRIVATE);
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.putString("day",day);
-                editor.apply();
+                if (dayArray.length() == 0) {
+                    String day = dayArray.getString("day");
+                    SharedPreferences sharedPreferences = getActivity().getSharedPreferences("reminder", Context.MODE_PRIVATE);
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                    editor.putString("day", day);
+                    editor.apply();
+                }
+                else {
+                    String daysArray[] = {"Sunday","Monday","Tuesday", "Wednesday","Thursday","Friday", "Saturday"};
+                    Calendar calendar = Calendar.getInstance();
+                    int day = calendar.get(Calendar.DAY_OF_WEEK);
+                    SharedPreferences sharedPreferences = getActivity().getSharedPreferences("reminder", Context.MODE_PRIVATE);
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                    editor.putString("day", daysArray[day]);
+                    editor.apply();
+                }
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -206,6 +195,7 @@ public class Settings extends Fragment {
         Configuration configuration = new Configuration();
         configuration.locale = locale;
         getActivity().getBaseContext().getResources().updateConfiguration(configuration,getActivity().getBaseContext().getResources().getDisplayMetrics());
+        getActivity().recreate();
     }
 
 }

@@ -91,6 +91,7 @@ public class Login extends Fragment {
             UserDetails userDetails = new UserDetails(account.getEmail(),account.getGivenName());
             Gson gson = new GsonBuilder().create();
             String stringJson = gson.toJson(userDetails);
+            System.out.println(stringJson);
             RegisterUser registerUser = new RegisterUser();
             registerUser.execute(stringJson);
             // Signed in successfully, show authenticated UI.

@@ -370,4 +370,57 @@ public class AsyncTaskData {
         }
         return reminderDay;
     }
+
+    public static String totalItemsReused() {
+        URL url = null;
+        StringBuffer sb = null;
+        HttpURLConnection connection = null;
+        String itemClaimData = "";
+        try {
+            url = new URL(BASE_URL + "totalitemsclaimed");
+            connection = (HttpURLConnection) url.openConnection();
+            connection.setReadTimeout(10000);
+            connection.setConnectTimeout(15000);
+            connection.setRequestMethod("GET");
+            connection.setRequestProperty("Content-Type", "application/json");
+            connection.setRequestProperty("Accept", "application/json");
+            Scanner inStream = new Scanner(connection.getInputStream());
+            while (inStream.hasNextLine()) {
+                itemClaimData += inStream.nextLine();
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            connection  .disconnect();
+        }
+        return itemClaimData;
+    }
+
+    public static String totalCarbonIntensity() {
+        URL url = null;
+        StringBuffer sb = null;
+        HttpURLConnection connection = null;
+        String itemClaimData = "";
+        try {
+            url = new URL(BASE_URL + "totalcarbonintensityreduced");
+            connection = (HttpURLConnection) url.openConnection();
+            connection.setReadTimeout(10000);
+            connection.setConnectTimeout(15000);
+            connection.setRequestMethod("GET");
+            connection.setRequestProperty("Content-Type", "application/json");
+            connection.setRequestProperty("Accept", "application/json");
+            Scanner inStream = new Scanner(connection.getInputStream());
+            while (inStream.hasNextLine()) {
+                itemClaimData += inStream.nextLine();
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            connection  .disconnect();
+        }
+        return itemClaimData;
+    }
+
 }
