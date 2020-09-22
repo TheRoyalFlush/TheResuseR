@@ -1,5 +1,6 @@
 package com.example.theresuser;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
@@ -17,6 +18,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -43,7 +45,7 @@ import java.util.Date;
 
 //Class responsible for handeling the data when user claims an object
 public class ItemClaim extends Fragment {
-    String data,carbonIntensity,latitude,longitude,userLatitude,userLongitude,name,type,year,color;
+    String data,carbonIntensity,latitude,longitude,userLatitude,userLongitude,name,type,year,color,postId;
     TextView itemName,itemYear,itemType,itemColor,carbonIntensityMessage;
     Button claim,route;
     float totalCI;
@@ -74,12 +76,14 @@ public class ItemClaim extends Fragment {
             year = jsonObject.getString("year_range");
             color = jsonObject.getString("color_name");
             carbonIntensity = jsonObject.getString("carbon_intensity");
+            postId = jsonObject.getString("post_id");
 
             itemName.setText(" "+name);
             itemColor.setText(" "+color);
             itemType.setText(" "+type);
             itemYear.setText(" "+year+" years old");
             totalCI = Float.parseFloat(carbonIntensity)*Float.valueOf(jsonObject.getString("kg"));
+            totalCI = Math.round(totalCI);
             carbonIntensityMessage.setText(name+" "+getString(R.string.contains)+" "+totalCI+" "+getString(R.string.CImsg));
 
         } catch (JSONException e) {
@@ -90,31 +94,13 @@ public class ItemClaim extends Fragment {
         Location.distanceBetween(Double.valueOf(userLatitude),Double.valueOf(userLongitude),Double.valueOf(latitude),Double.valueOf(longitude),distance);
 
         claim.setOnClickListener(new View.OnClickListener() {
+            @SuppressLint("SetTextI18n")
             @Override
             public void onClick(View v) {
                 if (distance[0] < 50) {
-                    final Dialog dialog = new Dialog(getActivity());
-                    dialog.setContentView(R.layout.popup_activity);
-                    dialog.setCanceledOnTouchOutside(false);
-                    TextView treeMsg = (TextView)dialog.findViewById(R.id.treeMsg);
-                    float numTree = (float) (0.015*totalCI);
-                    int finalTree = (int)(numTree);
-                    if (finalTree >= 1){
-                        treeMsg.setText(getString(R.string.reusing)+finalTree+getString(R.string.reusingtrees));
-                    }
-                    if (finalTree < 1){
-                        treeMsg.setText(getString(R.string.reusinglessthanone));
-                    }
-                    TextView close = (TextView)dialog.findViewById(R.id.close2);
-                    close.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            dialog.dismiss();
-                            ClaimAsyncTask claimAsyncTask = new ClaimAsyncTask();
-                            claimAsyncTask.execute();
-                        }
-                    });
-                    dialog.show();
+
+                    CheckAvailability checkAvailability = new CheckAvailability();
+                    checkAvailability.execute();
                 }
                 else{
                     Toast.makeText(getActivity(),getString(R.string.neartheitem),Toast.LENGTH_LONG).show();
@@ -131,6 +117,49 @@ public class ItemClaim extends Fragment {
             }
         });
         return view;
+    }
+
+    public class CheckAvailability extends AsyncTask<String,Void,String>{
+        @Override
+        protected String doInBackground(String... strings) {
+            String allItems = AsyncTaskData.getMapData();
+            return allItems;
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            try {
+                Boolean check = false;
+                JSONArray allItems = new JSONArray(s);
+                for (int i=0;i<=allItems.length()-1;i++){
+                    if (postId.equals(allItems.getJSONObject(i).getString("post_id"))){
+                        check = true;
+                    }
+                }
+                if (check){
+                    final Dialog dialog = new Dialog(getActivity());
+                    dialog.setContentView(R.layout.popup_activity);
+                    dialog.setCanceledOnTouchOutside(false);
+                    TextView treeMsg = (TextView)dialog.findViewById(R.id.treeMsg);
+                    treeMsg.setText(getString(R.string.green));
+                    TextView close = (TextView)dialog.findViewById(R.id.close2);
+                    close.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            dialog.dismiss();
+                            ClaimAsyncTask claimAsyncTask = new ClaimAsyncTask();
+                            claimAsyncTask.execute();
+                        }
+                    });
+                    dialog.show();
+                }
+                else {
+                    Toast.makeText(getActivity(),"This item has already been claimed.",Toast.LENGTH_SHORT).show();
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
 

@@ -76,4 +76,7 @@
     <string name="bin_day">了解您的垃圾桶日。</string>
     <string name="item_reduced">通过Resusers重复使用的物品。</string>
     <string name="trees_planted">已种植的树。</string>
+    <string name="green">感谢您推动绿色Monash委员会。</string>
+    <string name="comm">" 我们社区的贡献"</string>
+    <string name="bin_collection_reminder">垃圾桶提醒</string>
 </resources>

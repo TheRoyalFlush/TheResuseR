@@ -33,6 +33,8 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import org.w3c.dom.Text;
+
 import java.util.Locale;
 
 
@@ -62,7 +64,7 @@ public class MainActivity extends AppCompatActivity  {
         getSupportActionBar().setDisplayShowTitleEnabled(false);
         toolbar.setBackgroundColor(Color.parseColor("#f3f9fb"));
 
-        //showSplash();
+        showSplash();
         ImageView home = (ImageView)findViewById(R.id.home);
 
         bottomNavigationView = (BottomNavigationView)findViewById(R.id.bottomNavigationView);
@@ -78,8 +80,8 @@ public class MainActivity extends AppCompatActivity  {
     }
 //Splash screen setup
     public void showSplash(){
-        final TextView close,previous,next;
-        final Dialog dialog = new Dialog(this);
+        final TextView skip,next;
+        final Dialog dialog = new Dialog(this,android.R.style.Theme_Black_NoTitleBar_Fullscreen);
         SharedPreferences sharedPreferences1 = getSharedPreferences("SplashScreen",MODE_PRIVATE);
         if (sharedPreferences1.getInt("splash",0) == 1){
             return;
@@ -91,80 +93,41 @@ public class MainActivity extends AppCompatActivity  {
         }
         dialog.setContentView(R.layout.popup_splash_screen);
         dialog.setCanceledOnTouchOutside(false);
-        close = (TextView)dialog.findViewById(R.id.close);
-        previous = (TextView)dialog.findViewById(R.id.previous);
-        next = (TextView)dialog.findViewById(R.id.next);
         screen = (ImageView)dialog.findViewById(R.id.screen);
-        count = 1;
+        count = 0;
         System.out.println("splash");
-        screen.setImageResource(R.drawable.one);
-        next.setVisibility(View.VISIBLE);
-        previous.setVisibility(View.INVISIBLE);
+        final Resources resources = getResources();
+        screen.setImageDrawable(resources.getDrawable(R.drawable.new_icon));
+        //screen.setImageResource(R.drawable.new_icon);
+        next = (TextView)dialog.findViewById(R.id.next);
+        skip = (TextView)dialog.findViewById(R.id.skip);
         msg = (TextView)dialog.findViewById(R.id.msg);
-
-        close.setOnClickListener(new View.OnClickListener() {
+        msg.setText("");
+        skip.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                dialog.dismiss();
+                dialog.cancel();
             }
         });
+
 //Populating images
-        previous.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                next.setVisibility(View.VISIBLE);
-                if (count !=1){
-                    count -= count;}
-                if (count == 1){
-                    previous.setVisibility(View.INVISIBLE);
-                }
-                if (count == 1){
-                    screen.setImageResource(R.drawable.one);
-                    msg.setText("Select location where your items are located on the kerb.");
-                }
-                if (count == 2){
-                    screen.setImageResource(R.drawable.two);
-                    msg.setText("Add details of the items plcaed on the kerb. \n Press Add More to addmore items into the list.\nPress post to let your community know about the listed items.");
-                }
-                if (count == 3){
-                    screen.setImageResource(R.drawable.three);
-                    msg.setText("Locate items around you to look for items to reuse.");
-                }
-                if (count == 4){
-                    screen.setImageResource(R.drawable.four);
-                    msg.setText("Know your contribution towards a greener earth.");
-                }
-                if (count == 5){
-                    screen.setImageResource(R.drawable.five);
-                    msg.setText("Seamlessly switch between English and Chinese language");
-                }
-                if (count == 6){
-                    screen.setImageResource(R.drawable.six);
-                    msg.setText("Learn More about the application and Monash council.");
-                }
-            }
-        });
-
         next.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                previous.setVisibility(View.VISIBLE);
-                if (count != 6) {
-                    count += 1;
-                }
-                if(count == 4){
-                    next.setVisibility(View.INVISIBLE);
-                }
+                count++;
+                System.out.println(count);
                 if (count == 1){
-                    screen.setImageResource(R.drawable.one);
+                    screen.setImageDrawable(resources.getDrawable(R.drawable.one));
                     msg.setText("Select location where your items are located on the kerb.");
                 }
                 if (count == 2){
-                    screen.setImageResource(R.drawable.two);
-                    msg.setText("Add details of the items plcaed on the kerb. \n Press Add More to addmore items into the list.\nPress post to let your community know about the listed items.");
+                    screen.setImageDrawable(resources.getDrawable(R.drawable.two));
+                    msg.setTextSize(14);
+                    msg.setText("Add details of the items plcaed on the kerb. \n Press Add More to add more items into the list.\nPress post to let your community know about the listed items.");
                 }
                 if (count == 3){
                     screen.setImageResource(R.drawable.three);
+                    msg.setTextSize(18);
                     msg.setText("Locate items around you to look for items to reuse.");
                 }
                 if (count == 4){
@@ -176,11 +139,16 @@ public class MainActivity extends AppCompatActivity  {
                     msg.setText("Seamlessly switch between English and Chinese language");
                 }
                 if (count == 6){
+                    next.setText("Get Started");
                     screen.setImageResource(R.drawable.six);
                     msg.setText("Learn More about the application and Monash council.");
                 }
+                if (count == 7){
+                    dialog.cancel();
+                }
             }
         });
+
         dialog.show();
 
     }

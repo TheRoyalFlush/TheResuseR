@@ -17,139 +17,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-    <LinearLayout
-        android:id="@+id/stats"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:orientation="vertical">
-
-            <TextView
-                android:id="@+id/itemsReused"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="10sp"
-                android:text="109"
-                android:textSize="30sp" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="7sp"
-                android:text="@string/item_reduced"
-                android:textSize="15sp" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:orientation="vertical"
-            >
-
-            <TextView
-                android:id="@+id/treesPlanted"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="10sp"
-                android:text="109"
-                android:textSize="30sp" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="7sp"
-                android:text="@string/trees_planted"
-                android:textSize="15sp" />
-        </LinearLayout>
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/frame"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/stats"
-        android:orientation="horizontal"
-        android:padding="10sp"
-        >
-
-        <ImageView
-            android:id="@+id/imageView1"
-            android:layout_width="38dp"
-            android:layout_height="58dp"
-            android:src="@layout/tree_image"
-            android:visibility="invisible" />
-
-        <ImageView
-            android:id="@+id/imageView2"
-            android:layout_width="38dp"
-            android:layout_height="58dp"
-            android:src="@layout/tree_image"
-            android:visibility="invisible" />
-
-        <ImageView
-            android:id="@+id/imageView3"
-            android:layout_width="38dp"
-            android:layout_height="58dp"
-            android:src="@layout/tree_image"
-            android:visibility="invisible" />
-
-        <ImageView
-            android:id="@+id/imageView4"
-            android:layout_width="38dp"
-            android:layout_height="58dp"
-            android:src="@layout/tree_image"
-            android:visibility="invisible" />
-
-        <ImageView
-            android:id="@+id/imageView5"
-            android:layout_width="38dp"
-            android:layout_height="58dp"
-            android:src="@layout/tree_image"
-            android:visibility="invisible" />
-
-        <ImageView
-            android:id="@+id/imageView6"
-            android:layout_width="38dp"
-            android:layout_height="58dp"
-            android:src="@layout/tree_image"
-            android:visibility="invisible" />
-
-        <ImageView
-            android:id="@+id/imageView7"
-            android:layout_width="38dp"
-            android:layout_height="58dp"
-            android:src="@layout/tree_image"
-            android:visibility="invisible" />
-
-        <ImageView
-            android:id="@+id/imageView8"
-            android:layout_width="38dp"
-            android:layout_height="58dp"
-            android:src="@layout/tree_image"
-            android:visibility="invisible" />
-
-        <ImageView
-            android:id="@+id/imageView9"
-            android:layout_width="38dp"
-            android:layout_height="58dp"
-            android:src="@layout/tree_image"
-            android:visibility="invisible" />
-
-        <ImageView
-            android:id="@+id/imageView10"
-            android:layout_width="38dp"
-            android:layout_height="58dp"
-            android:src="@layout/tree_image"
-            android:visibility="invisible" />
-    </LinearLayout>
 
     <LinearLayout
         android:id="@+id/l1"
@@ -157,8 +25,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
         android:background="@layout/border_layout"
-        android:orientation="vertical"
-        android:layout_below="@+id/frame">
+        android:orientation="vertical">
 
         <TextView
             android:layout_width="match_parent"

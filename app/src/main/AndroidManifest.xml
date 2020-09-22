@@ -32,6 +32,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <receiver
+            android:name=".SheduleIntentService"
+            android:exported="true"
+            android:enabled="true"/>
+
     </application>
 
 </manifest>

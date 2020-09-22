@@ -1,3 +1,11 @@
+<!--
+  ~ Copyright (c) 2020. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+  ~ Morbi non lorem porttitor neque feugiat blandit. Ut vitae ipsum eget quam lacinia accumsan.
+  ~ Etiam sed turpis ac ipsum condimentum fringilla. Maecenas magna.
+  ~ Proin dapibus sapien vel ante. Aliquam erat volutpat. Pellentesque sagittis ligula eget metus.
+  ~ Vestibulum commodo. Ut rhoncus gravida arcu.
+  -->
+
 <resources>
     <string name="app_name">The ResuseR</string>
     <string name="action_settings" translatable="false">Settings</string>
@@ -87,4 +95,7 @@ Immigrants from an assortment of backgrounds (12.5% from China, 5.3% from India,
     <string name="bin_day">Know your bin day.</string>
     <string name="item_reduced">Items reused by Resusers</string>
     <string name="trees_planted">Trees planted</string>
+    <string name="green">Thank You for promoting a greener Monash Council.</string>
+    <string name="comm">Our community\'s contribution</string>
+    <string name="bin_collection_reminder">Bin Collection Reminder</string>
 </resources>

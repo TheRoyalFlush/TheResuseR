@@ -66,6 +66,7 @@ import com.google.gson.JsonArray;
 
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.security.KeyStore;
 import java.util.ArrayList;
@@ -111,13 +112,30 @@ public class Dashboard extends Fragment {
 
         SeekBar seekBar = (SeekBar)view.findViewById(R.id.seekBar);
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            TextView textView = (TextView)view.findViewById(R.id.contribution);
             @SuppressLint("SetTextI18n")
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                if (progress >90){
-                    TextView textView = (TextView)view.findViewById(R.id.contribution);
+                if (progress == 0){
+                    textView.setText(" ");
+                }
+                else if (progress >= 10 && progress < 20){
+                    //textView.setText(getString(R.string.red)+" "+(int)(ciWeight)+" "+getString(R.string.kgreduced)+" "+(int)(numKm)+" "+getString(R.string.km));
+                    textView.setText(getString(R.string.red));
+                }
+                else if (progress >=20 && progress < 40){
+                    textView.setText(getString(R.string.red)+" "+(int)(ciWeight)+" kgs");
+                }
+                else if (progress >= 40 && progress < 60){
+                    textView.setText(getString(R.string.red)+" "+(int)(ciWeight)+" kgs of CO2 from going into atmosphser");
+                }
+                else if (progress >= 60 && progress <80){
+                    textView.setText(getString(R.string.red)+" "+(int)(ciWeight)+" "+getString(R.string.kgreduced));
+                }
+                else if (progress >=80 && progress <= 100){
                     textView.setText(getString(R.string.red)+" "+(int)(ciWeight)+" "+getString(R.string.kgreduced)+" "+(int)(numKm)+" "+getString(R.string.km));
                 }
+
             }
 
             @Override
@@ -245,19 +263,23 @@ public class Dashboard extends Fragment {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
+
+                TotalItemsReused totalItemsReused = new TotalItemsReused();
+                totalItemsReused.execute();
             }
         }
     }
 
-    private void userInTopThree(int userRank) {
+    private void userInTopThree(final int userRank) {
         ListView topThreeList = (ListView)view.findViewById(R.id.topThreeList);
         List<String[]> topList = new ArrayList<>();
         for (int i = 0; i<= 2;i++){
+            String rank = "none";
             if (i == userRank - 1){
-                topList.add(new String[]{"","#"+(1+i)+" "+account.getGivenName()});
+                topList.add(new String[]{rank,account.getGivenName()});
             }
             else {
-                topList.add(new String[]{"","#"+(1+i)+" " +getString(R.string.contributer)});
+                topList.add(new String[]{rank,getString(R.string.contributer)});
             }
         }
         TopThreeClass adapter = new TopThreeClass(con,R.layout.leaderboard, (ArrayList<String[]>) topList){
@@ -265,40 +287,51 @@ public class Dashboard extends Fragment {
             @Override
             public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
                 View view = super.getView(position, convertView, parent);
+                ImageView imageView = (ImageView)view.findViewById(R.id.rank);
+                if (position == userRank -1 ){
+                    view.setBackgroundColor(Color.parseColor("#74d4c0"));
+                }
                 if (position == 0){
-                    view.setBackgroundColor(Color.parseColor("#f4d143"));
+                    //view.setBackgroundColor(Color.parseColor("#ffd700"));
+                    imageView.setImageResource(R.drawable.gold);
                 }
                 else if (position == 1){
-                    view.setBackgroundColor(Color.parseColor("#f0f0f0"));
+                    //view.setBackgroundColor(Color.parseColor("#f0f0f0"));
+                    imageView.setImageResource(R.drawable.silver);
                 }
                 else if (position == 2){
-                    view.setBackgroundColor(Color.parseColor("#d28c47"));
+                    //view.setBackgroundColor(Color.parseColor("#d28c47"));
+                    imageView.setImageResource(R.drawable.bronze);
                 }
                 return view;
             }
         };
         topThreeList.setAdapter(adapter);
     }
-    private void userNotInTopThree(int userRank) {
+    private void userNotInTopThree(final int userRank) {
         ListView topThreeList = (ListView)view.findViewById(R.id.topThreeList);
         List<String[]> topList = new ArrayList<>();
         for (int i = 0; i<= 2;i++){
-            topList.add(new String[]{"#"+(1+i)," "+getString(R.string.contribute)});
+            topList.add(new String[]{"",getString(R.string.contribute)});
         }
-        topList.add(new String[]{"#"+userRank," "+account.getGivenName()});
+        topList.add(new String[]{"","#"+userRank+"   "+account.getGivenName()});
         TopThreeClass adapter = new TopThreeClass(con,R.layout.leaderboard, (ArrayList<String[]>) topList){
             @NonNull
             @Override
             public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
                 View view =  super.getView(position, convertView, parent);
+                ImageView imageView = (ImageView)view.findViewById(R.id.rank);
                 if (position == 0){
-                    view.setBackgroundColor(Color.parseColor("#f4d143"));
+                    //view.setBackgroundColor(Color.parseColor("#ffd700"));
+                    imageView.setImageResource(R.drawable.gold);
                 }
                 else if (position == 1){
-                    view.setBackgroundColor(Color.parseColor("#f0f0f0"));
+                    //view.setBackgroundColor(Color.parseColor("#f0f0f0"));
+                    imageView.setImageResource(R.drawable.silver);
                 }
                 else if (position == 2){
-                    view.setBackgroundColor(Color.parseColor("#d28c47"));
+                    //view.setBackgroundColor(Color.parseColor("#d28c47"));
+                    imageView.setImageResource(R.drawable.bronze);
                 }
                 else if (position == 3){
                     view.setBackgroundColor(Color.parseColor("#74d4c0"));
@@ -307,6 +340,77 @@ public class Dashboard extends Fragment {
             }
         };
         topThreeList.setAdapter(adapter);
+    }
+
+    public class TotalItemsReused extends AsyncTask<String,Void,String>{
+        @Override
+        protected String doInBackground(String... strings) {
+            return AsyncTaskData.totalItemsReused();
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            try {
+                JSONObject totalItems = new JSONObject(s);
+                TextView itemsReused = (TextView)view.findViewById(R.id.itemsReused);
+                itemsReused.setText(totalItems.getString("totalitemsclaimed"));
+
+                TotalCarbonIntenisty totalCarbonIntenisty = new TotalCarbonIntenisty();
+                totalCarbonIntenisty.execute();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public class TotalCarbonIntenisty extends AsyncTask<String,Void,String>{
+        @Override
+        protected String doInBackground(String... strings) {
+            return AsyncTaskData.totalCarbonIntensity();
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            try {
+                JSONObject totalCarbonIntensity = new JSONObject(s);
+                TextView treesPlanted = (TextView)view.findViewById(R.id.treesPlanted);
+                double trees = Double.parseDouble(totalCarbonIntensity.getString("totalcarbonintensityreduced")) * 0.0015;
+                String tre = String.format("%.1f", trees);
+                treesPlanted.setText(tre);
+                addTree(trees);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void addTree(double value) {
+        List<Integer> imageList = new ArrayList<>();
+        imageList.add(R.id.imageView1); imageList.add(R.id.imageView2);
+        imageList.add(R.id.imageView3); imageList.add(R.id.imageView4);
+        imageList.add(R.id.imageView5); imageList.add(R.id.imageView6);
+        imageList.add(R.id.imageView7); imageList.add(R.id.imageView8);
+        imageList.add(R.id.imageView9); imageList.add(R.id.imageView10);
+
+
+        int newValue = (int)(value);
+        for (int i = 0; i <= newValue -1 ;i++){
+            System.out.println(i);
+            ClipDrawable mImageDrawable1;
+            ImageView imageView = (ImageView)view.findViewById(imageList.get(i));
+            imageView.setVisibility(View.VISIBLE);
+            mImageDrawable1 = (ClipDrawable) imageView.getDrawable();
+            mImageDrawable1.setLevel(10000);
+        }
+
+        int nextValue = (int)((value - newValue)*10);
+        if (nextValue >= 1){
+            ClipDrawable mImageDrawable1;
+            ImageView img = view.findViewById(imageList.get(newValue));
+            img.setVisibility(View.VISIBLE);
+            mImageDrawable1 = (ClipDrawable) img.getDrawable();
+            mImageDrawable1.setLevel(nextValue*1000);
+        }
     }
 
 }

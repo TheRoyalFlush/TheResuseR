@@ -6,12 +6,14 @@ import android.app.Dialog;
 import android.app.PendingIntent;
 import android.app.TimePickerDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.AsyncTask;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 
@@ -41,10 +43,11 @@ import java.util.Locale;
 //Settings screen for the application
 public class Settings extends Fragment {
 
-    Switch english,chinese,reminder;
+    Switch english;
+    Switch chinese;
+    static Switch binDay;
     View view;
     SharedPreferences sharedPreferences;
-    TextView binDay;
     String day;
 
     public Settings() {
@@ -64,7 +67,7 @@ public class Settings extends Fragment {
         final SharedPreferences.Editor editor = sharedPreferences.edit();
         english = (Switch)view.findViewById(R.id.english);
         chinese = (Switch)view.findViewById(R.id.chinese);
-        binDay = (TextView) view.findViewById(R.id.binday);
+        binDay = (Switch) view.findViewById(R.id.binday);
         System.out.println(language);
 //Checking the current language
         if (language != null) {
@@ -117,18 +120,43 @@ public class Settings extends Fragment {
             }
         });
 
+        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("reminder",Context.MODE_PRIVATE);
+        if (sharedPreferences.getInt("hour",0) == 0){
+            binDay.setChecked(false);
+        }
+        else {
+            binDay.setChecked(true);
+        }
         binDay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (day != null && !day.equals("")) {
-                    Toast.makeText(getActivity(), day + " " + getString(R.string.bin), Toast.LENGTH_SHORT).show();
+                if (binDay.isChecked()){
+                    AlarmManager alarmManager;
+                    Intent intent;
+                    PendingIntent pendingIntent;
+                    alarmManager = (AlarmManager)getActivity().getSystemService(Context.ALARM_SERVICE);
+                    intent = new Intent(getActivity(),SheduleIntentService.class);
+                    pendingIntent = PendingIntent.getBroadcast(getActivity(),100,intent,0);
+                    if (alarmManager != null){
+                        alarmManager.cancel(pendingIntent);
+                    }
+
                 }
                 else {
-                    Toast.makeText(getActivity(),getString(R.string.not),Toast.LENGTH_SHORT).show();
+                    if (day != null && !day.equals("")) {
+                        binDay.setChecked(true);
+                        Toast.makeText(getActivity(), day + " " + getString(R.string.bin), Toast.LENGTH_SHORT).show();
+                        DialogFragment newFragment = new TimePickerFragment();
+                        newFragment.show(getActivity().getSupportFragmentManager(), "timePicker");
+                    } else {
+                        binDay.setChecked(false);
+                        Toast.makeText(getActivity(), getString(R.string.not), Toast.LENGTH_SHORT).show();
+                    }
                 }
             }
         });
-
+        ReminderDay reminderDay = new ReminderDay();
+        reminderDay.execute();
         return view;
     }
 //Adding intent for the reminder
@@ -150,7 +178,14 @@ public class Settings extends Fragment {
                     DateFormat.is24HourFormat(getActivity()));
         }
 
-        public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+    @Override
+    public void onCancel(@NonNull DialogInterface dialog) {
+        binDay.setChecked(false);
+    }
+
+    public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+            Calendar calendar2 = Calendar.getInstance();
+            System.out.println(calendar2.get(Calendar.DAY_OF_WEEK)+"|"+calendar2.get(Calendar.HOUR_OF_DAY)+"|"+calendar2.get(Calendar.MINUTE));
             SharedPreferences sharedPreferences = getActivity().getSharedPreferences("reminder",Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = sharedPreferences.edit();
             editor.putInt("hour",hourOfDay);
@@ -158,14 +193,42 @@ public class Settings extends Fragment {
             editor.apply();
             SharedPreferences sp = getActivity().getSharedPreferences("reminder",Context.MODE_PRIVATE);
             String day = sp.getString("day",null);
+
+            int dayInt =0;
+            String daysArray[] = {"Sunday","Monday","Tuesday", "Wednesday","Thursday","Friday", "Saturday"};
+            for (int i = 0;i<=daysArray.length-1;i++){
+                if(day.equals(daysArray[i])){
+                    if (i == 0){
+                        dayInt = 6;
+                    }
+                    else {
+                        dayInt = i;
+
+                    }
+                }
+            }
+
             alarmManager = (AlarmManager)getActivity().getSystemService(Context.ALARM_SERVICE);
             intent = new Intent(getActivity(),SheduleIntentService.class);
-            pendingIntent = PendingIntent.getService(getActivity(),0,intent,0);
-            alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, (hourOfDay*60*60*60)+(minute*60*60),
-                    AlarmManager.INTERVAL_DAY*7,pendingIntent);
-            Toast.makeText(getActivity(),"Your reminder has been set for "+day+" at "+hourOfDay+":"+minute,Toast.LENGTH_LONG).show();
+            pendingIntent = PendingIntent.getBroadcast(getActivity(),100,intent,0);
 
+            Calendar calendar = Calendar.getInstance();
+            calendar.set(Calendar.HOUR_OF_DAY,hourOfDay);
+            calendar.set(Calendar.MINUTE,minute);
+            calendar.set(Calendar.SECOND,00);
+            calendar.set(Calendar.DAY_OF_WEEK, dayInt);
+            System.out.println(calendar.get(Calendar.DAY_OF_WEEK)+"|"+calendar.get(Calendar.HOUR_OF_DAY)+"|"+calendar.get(Calendar.MINUTE));
+
+            alarmManager.setRepeating(AlarmManager.RTC_WAKEUP,calendar.getTimeInMillis() ,
+                    AlarmManager.INTERVAL_DAY*7,pendingIntent);
+            if (minute < 10){
+                Toast.makeText(getActivity(),"Your reminder has been set for "+daysArray[dayInt]+" at "+hourOfDay+":0"+minute,Toast.LENGTH_LONG).show();
+            }
+            else {
+                Toast.makeText(getActivity(), "Your reminder has been set for " + daysArray[dayInt] + " at " + hourOfDay + ":" + minute, Toast.LENGTH_LONG).show();
+            }
         }
+
     }
 
     public class ReminderDay extends AsyncTask<String, Void, String> {
@@ -180,9 +243,11 @@ public class Settings extends Fragment {
 
         @Override
         protected void onPostExecute(String s) {
+            System.out.println(s);
             try {
                 JSONObject dayArray = new JSONObject(s);
-                if (dayArray.length() == 0) {
+                System.out.println(dayArray.length());
+                if (dayArray.length() != 0) {
                     day = dayArray.getString("day");
                     SharedPreferences sharedPreferences = getActivity().getSharedPreferences("reminder", Context.MODE_PRIVATE);
                     SharedPreferences.Editor editor = sharedPreferences.edit();

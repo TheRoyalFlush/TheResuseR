@@ -9,7 +9,7 @@
         android:title="@string/donate" />
     <item
         android:id="@+id/findStuff"
-        android:icon="@drawable/ic_desktop_windows_black_24dp"
+        android:icon="@drawable/findblack"
         android:title="@string/find" />
     <item
         android:id="@+id/dashboard"
